@@ -6,9 +6,18 @@
     <script>
         MathJax = {
             loader: { load: ['input/asciimath', 'output/chtml', 'ui/menu'] },
+            startup: {
+                ready: () => {
+                    MathJax.startup.defaultReady();
+                    MathJax.startup.promise.then(() => {
+                        window.onBodyClicked();
+                    });
+                },
+            }
         };
     </script>
     <script id='MathJax-script' async src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/startup.js'></script>
+    <script src='problemgenerator.js'></script>
 
     <style>
         body {
@@ -19,139 +28,27 @@
     </style>
 </head>
 
-<body onclick='c()' style="min-width: 100vw; min-height:100vh;">
+<body onclick='window.onBodyClicked()' style="min-width: 100vw; min-height:100vh;">
 
-    <script>
-        let state = 0;
-        function shuffledArray(len) {
-            let array = [];
+    <script type="module">
+        import { initRandom, randInclusive } from './randutils.js';
+        import { generateCombineSum, generateCombineSumN } from './problemgenerator.js';
 
-            for (let i = 0; i < len; i++) {
-                array.push(i);
-            }
-            for (var i = array.length - 1; i >= 0; i--) {
-                var j = Math.floor(Math.random() * (i + 1));
-                var temp = array[i];
-                array[i] = array[j];
-                array[j] = temp;
-            }
-            return array;
-        }
-        let shuffled = [];
-        for (let i = 0; i < 100; i++) {
-            shuffled.push(shuffledArray(i));
-        }
+        let state = -1;
 
-        function pickRandomUnique(array, seed) {
-            return array[shuffled[array.length][seed]];
-        }
-
-        function pickRandom(array, seed) {
-            return array[shuffled[99][seed] % array.length];
-        }
-
-        function sign(seed) {
-            return pickRandom(['+', '-'], seed);
-        }
-
-        function operation(seed) {
-            return pickRandom(['+', '-', '*', '/'], seed);
-        }
-
-        function v(seed) {
-            return pickRandomUnique(['a', 'b', 'c', 'x', 'y', 'z'], seed);
-        }
-
-        class Group {
-            constructor(factor, v) {
-                this.factor = factor;
-                this.v = v.split("").sort().join("");
-            }
-
-            render(asOperand = false) {
-                if (this.factor == 0)
-                    return '';
-                if (v.length == 0)
-                    return `${this.factor}`;
-
-                let result = `${this.factor}`;
-                if (this.factor == 1)
-                    result = '';
-                if (this.factor == -1)
-                    result = '-';
-
-                if (asOperand) {
-                    if (result.startsWith('-'))
-                        result = '- ' + result.substring(1);
-                    else
-                        result = '+ ' + result;
-                }
-
-                let curv = this.v[0];
-                let count = 0;
-                for (let i = 0; i < this.v.length; i++) {
-                    if (curv == this.v[i]) {
-                        count++;
-                    } else {
-                        result += ` ${curv}`;
-                        if (count > 1)
-                            return `^${count}`;
-                        count = 1;
-                    }
-                    curv = this.v[i];
-                }
-                result += ` ${curv}`;
-                if (count > 1)
-                    return `^${count}`;
-
-                return result;
-            }
-
-            add(group) {
-                if (group.v != this.v)
-                    return null;
-                return new Group(this.factor + group.factor, this.v);
-            }
-
-            multiply(group) {
-                return new Group(this.factor * group.factor, this.v + group.v);
-            }
-        }
-
-        function generateCombineSum() {
-            let a = new Group(Math.floor(Math.random() * 21) - 10, v(0));
-            let b = new Group(Math.floor(Math.random() * 21) - 10, v(0));
-            return {
-                problem: `${a.render()} ${b.render(true)} = ?`,
-                solution: `${a.add(b).render()}`
-            };
-        }
-
-        function generateCombineSumN(n, varn) {
-            const x = v(0);
-
-            let factors = Array.from({ length: 10 }, (_, i) => i + 1);
-
-            let a = Math.floor(Math.random() * 10) + 1;
-            let b = Math.floor(Math.random() * 10) + 1;
-            let result = eval(a + sign(0) + b);
-            return {
-                problem: `${renderGroup(a, x)} ${sign(0)} ${renderGroup(b, x)} = ?`,
-                solution: `${renderGroup(result, x)}`
-            };
-        }
         async function renderRandom() {
-            shuffled = [];
-            for (let i = 0; i < 100; i++) {
-                shuffled.push(shuffledArray(i));
-            }
+            initRandom();
 
-            let { problem, solution } = generateCombineSum();
+            const generators = [
+                // generateCombineSum,
+                () => generateCombineSumN(3, 2),
+            ]     
+
+            let { prompt, problem, solution } = generators[randInclusive(generators.length - 1)]();
             if (solution === '')
                 solution = '0';
 
-            console.log(problem, solution);
-
+            document.getElementById('prompt').innerHTML = prompt;
             document.getElementById('problem').innerHTML = '`' + problem + '`';
             if (problem.includes('?'))
                 document.getElementById('solution').innerHTML = '`' + problem.replace('?', solution) + '`';
@@ -160,7 +57,7 @@
             await MathJax.typesetPromise();
         }
 
-        function c() {
+        function onBodyClicked() {
             state = (state + 1) % 2;
             if (state == 0) {
                 document.getElementById('solution').style.display = 'none';
@@ -171,20 +68,13 @@
                 document.getElementById('problem').style.display = 'none';
             }
         }
+        window.onBodyClicked = onBodyClicked;
     </script>
 
-    <div id='problem' style="display: block;"> </div>
-    <div id='solution' style="display: none;"> </div>
+    <div id="prompt"></div>
+    <div id="problem" style="display: block;"> </div>
+    <div id="solution" style="display: none;"> </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            setTimeout(() => {
-                renderRandom();
-            }, 300);
-        });
-
-
-    </script>
 </body>
 
 </html>
