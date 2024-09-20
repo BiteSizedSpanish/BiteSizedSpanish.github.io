@@ -1,20 +1,19 @@
-import { nonZero, randVariableGroup, randVariable } from "./randutils.js";
+import { nonZero, randVariableGroup, randVariable, randInclusive } from "./randutils.js";
 
 class Group {
-    constructor(factor, v) {
+    constructor(factor, variables) {
         this.factor = factor;
-        this.v = v.split("").sort().join("");
+        this.variables = variables.split("").sort().join("");
     }
 
     render(asOperand = false) {
         if (this.factor == 0)
             return '';
-        if (this.v.length == 0)
-        {
+        if (this.variables.length == 0) {
             if (asOperand)
                 return this.factor < 0 ? `- ${-this.factor}` : `+ ${this.factor}`;
             return `${this.factor}`;
-            }
+        }
 
         let result = `${this.factor}`;
         if (this.factor == 1)
@@ -29,20 +28,20 @@ class Group {
                 result = '+ ' + result;
         }
 
-        let curv = this.v[0];
+        let prevVar = this.variables[0];
         let count = 0;
-        for (let i = 0; i < this.v.length; i++) {
-            if (curv == this.v[i]) {
+        for (let curVar of this.variables) {
+            if (prevVar == curVar) {
                 count++;
             } else {
-                result += ` ${curv}`;
+                result += ` ${prevVar}`;
                 if (count > 1)
                     result += `^${count}`;
                 count = 1;
             }
-            curv = this.v[i];
+            prevVar = curVar;
         }
-        result += ` ${curv}`;
+        result += ` ${prevVar}`;
         if (count > 1)
             result += `^${count}`;
 
@@ -50,13 +49,37 @@ class Group {
     }
 
     add(group) {
-        if (group.v != this.v)
+        if (group.variables != this.variables)
             return null;
-        return new Group(this.factor + group.factor, this.v);
+        return new Group(this.factor + group.factor, this.variables);
     }
 
     multiply(group) {
-        return new Group(this.factor * group.factor, this.v + group.v);
+        return new Group(this.factor * group.factor, this.variables + group.variables);
+    }
+
+    divide(group) {
+        const result = new Group(this.factor / group.factor, this.variables);
+        for (let curVar of group.variables) {
+            if (!result.variables.includes(curVar))
+                return null;
+            result.variables = result.variables.replace(curVar, '');
+        }
+        return result;
+    }
+
+    gcd(group) {
+        const commonFactor = gcd(Math.abs(this.factor), Math.abs(group.factor));
+        let commonVariables = '';
+        let otherGroupVariables = group.variables;
+
+        for (let curVar of this.variables) {
+            if (otherGroupVariables.includes(curVar)) {
+                commonVariables += curVar;
+                otherGroupVariables = otherGroupVariables.replace(curVar, '');
+            }
+        }
+        return new Group(commonFactor, commonVariables);
     }
 }
 
@@ -70,29 +93,16 @@ export function generateCombineSum() {
     };
 }
 
-export function generateCombineSumN(n, var_n) {
+export function generateCombineSumN(groupCount, maxGroupSize) {
     let groups = [];
-    for(let i = 0; i < n; i++) {
-        groups.push(new Group(nonZero(-10, 10), randVariableGroup(var_n)));
-    }
-
-    console.log(groups);
-
-    let problem = groups[0].render();
-    for(let i = 1; i < groups.length; i++) {
-        problem += ` ${groups[i].render(true)}`;
-    }
-
-    groups = simplify(groups);
-    let solution = groups[0].render();
-    for(let i = 1; i < groups.length; i++) {
-        solution += ` ${groups[i].render(true)}`;
+    for (let i = 0; i < groupCount; i++) {
+        groups.push(new Group(nonZero(-10, 10), randVariableGroup(maxGroupSize)));
     }
 
     return {
         prompt: `Simplify`,
-        problem: problem + ' = ',
-        solution,
+        problem: renderAdditiveGroups(groups) + ' = ',
+        solution: renderAdditiveGroups(simplify(groups)),
     };
 }
 
@@ -112,4 +122,46 @@ function simplify(groups) {
             result.push(groups[i]);
     }
     return result
+}
+
+function renderAdditiveGroups(groups) {
+    let asOperand = false;
+    let result = '';
+    for (let group of groups) {
+        result += ` ${group.render(asOperand)}`;
+        if (result.trim().length > 0)
+            asOperand = true;
+    }
+    return result;
+}
+
+function gcd(a, b) {
+    if (b == 0)
+        return a;
+    return gcd(b, a % b);
+}
+
+export function generateFactorOut() {
+    let commonFactor = randInclusive(1, 5);
+    let commonVars = randVariableGroup(2);
+
+    let groups = [];
+    for (let i = 0; i < 5; i++) {
+        groups.push(new Group(nonZero(-10, 10) * commonFactor, randVariableGroup(2, 3) + commonVars));
+    }
+
+    let commonGroup = groups[0];
+    commonGroup.factor = Math.abs(commonGroup.factor);
+    for (let group of groups) {
+        commonGroup = commonGroup.gcd(group);
+    }
+
+    return {
+        prompt: `Factor out the common factor`,
+        problem: renderAdditiveGroups(groups),
+        steps: [
+            `${commonGroup.render()}(${renderAdditiveGroups(groups.map(g => g.divide(commonGroup)))})`
+        ],
+        solution: `${commonGroup.render()}(${renderAdditiveGroups(simplify(groups.map(g => g.divide(commonGroup))))})`
+    };
 }

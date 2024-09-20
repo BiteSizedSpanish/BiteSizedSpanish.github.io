@@ -32,38 +32,44 @@ export function pickRandom(array, seed) {
 }
 
 export function sign(seed = null) {
-    return pickRandom(['+', '-'], seed ?? randInclusive(2));
+    return pickRandom(['+', '-'], seed ?? rand(2));
 }
 
 export function operation(seed = null) {
-    return pickRandom(['+', '-', '*', '/'], seed ?? randInclusive(4));
+    return pickRandom(['+', '-', '*', '/'], seed ?? rand(4));
 }
 
 export function randVariable(seed = null) {
-    return pickRandomUnique(['a', 'b', 'c', 'x', 'y', 'z'], seed ?? randInclusive(6));
+    return pickRandomUnique(['a', 'b', 'c', 'x', 'y', 'z'], seed ?? rand(6));
 }
 
-export function randVariableGroup(maxSize) {
+export function randVariableGroup(maxSize, varRange = null) {
+    if (varRange == null)
+        varRange = maxSize;
     let size = randInclusive(1, maxSize);
     let group = '';
     for (let i = 0; i < size; i++) {
-        group += randVariable(randInclusive(maxSize - 1));
+        group += randVariable(rand(varRange));
     }
     return group;
 }
 
+export function randInclusive(min, max) {
+    if (max == null) {
+        max = min;
+        min = 0;
+    }
+    return rand(max - min + 1) + min;
+}
+
 export function nonZero(min, max) {
     while (true) {
-        let result = Math.floor(Math.random() * (max - min + 1)) + min;
+        let result = randInclusive(min, max);
         if (result != 0)
             return result;
     }
 }
 
-export function randInclusive(min, max = null) {
-    if (max == null) {
-        max = min;
-        min = 0;
-    }
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+export function rand(max) {
+    return Math.floor(Math.random() * max);
 }

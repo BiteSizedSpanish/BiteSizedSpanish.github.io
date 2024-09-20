@@ -24,6 +24,11 @@
             text-align: center;
             padding: 5rem;
             box-sizing: border-box;
+            font-size: 3rem;
+        }
+
+        mjx-container {
+            font-size: 1em !important;
         }
     </style>
 </head>
@@ -31,41 +36,58 @@
 <body onclick='window.onBodyClicked()' style="min-width: 100vw; min-height:100vh;">
 
     <script type="module">
-        import { initRandom, randInclusive } from './randutils.js';
-        import { generateCombineSum, generateCombineSumN } from './problemgenerator.js';
+        import { initRandom, rand } from './randutils.js';
+        import { generateCombineSum, generateCombineSumN, generateFactorOut } from './problemgenerator.js';
 
         let state = -1;
+        let hideProblem = true;
 
         async function renderRandom() {
             initRandom();
 
             const generators = [
                 // generateCombineSum,
-                () => generateCombineSumN(3, 2),
-            ]     
+                // () => generateCombineSumN(5, 2),
+                generateFactorOut,
+            ]
 
-            let { prompt, problem, solution } = generators[randInclusive(generators.length - 1)]();
+            let { prompt, problem, solution, steps } = generators[rand(generators.length)]();
             if (solution === '')
                 solution = '0';
 
             document.getElementById('prompt').innerHTML = prompt;
             document.getElementById('problem').innerHTML = '`' + problem + '`';
-            if (problem.includes('?'))
+            if (problem.includes('?')) {
                 document.getElementById('solution').innerHTML = '`' + problem.replace('?', solution) + '`';
-            else
-                document.getElementById('solution').innerHTML = '`' + problem + '`<br>`' + solution + '`';
+                hideProblem = true;
+            }
+            else {
+                document.getElementById('solution').innerHTML = '`' + solution + '`';
+                hideProblem = false;
+            }
+
+            if (steps) {
+                for (let step of steps) {
+                    document.getElementById('steps').innerHTML += '<div style="display: none;">`' + step + '`</div>';
+                }
+            }
+
             await MathJax.typesetPromise();
         }
 
         function onBodyClicked() {
-            state = (state + 1) % 2;
+            state = (state + 1) % (2 + document.getElementById('steps').childElementCount);
             if (state == 0) {
-                document.getElementById('solution').style.display = 'none';
                 document.getElementById('problem').style.display = 'block';
+                document.getElementById('steps').innerHTML = '';
+                document.getElementById('solution').style.display = 'none';
                 renderRandom();
+            } else if (document.getElementById('steps').childElementCount >= state) {
+                document.getElementById('steps').children[state - 1].style.display = 'block';
             } else {
-                document.getElementById('solution').style.display = 'block';
-                document.getElementById('problem').style.display = 'none';
+                if (hideProblem)
+                    document.getElementById('problem').style.display = 'none';
+                 document.getElementById('solution').style.display = 'block';
             }
         }
         window.onBodyClicked = onBodyClicked;
@@ -73,6 +95,7 @@
 
     <div id="prompt"></div>
     <div id="problem" style="display: block;"> </div>
+    <div id="steps" style="display: block;"> </div>
     <div id="solution" style="display: none;"> </div>
 
 </body>
