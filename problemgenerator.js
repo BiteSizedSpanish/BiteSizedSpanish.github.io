@@ -6,6 +6,22 @@ class Term {
         this.variables = variables.split("").sort().join("");
     }
 
+    static one = new Term(1, '');
+
+    static generateSimple(baseFactor = Term.one) {
+        return new Term(nonZero(-3, 3) * baseFactor.factor, randVariableTerm(1, 2) + baseFactor.variables);
+    }
+
+    static generate(baseFactor = Term.one) {
+        return new Term(nonZero(-3, 3) * baseFactor.factor, randVariableTerm(2, 3) + baseFactor.variables);
+    }
+
+    static gcd(a, b) {
+        if (b == 0)
+            return a;
+        return Term.gcd(b, a % b);
+    }
+    
     render(asOperand = false) {
         if (this.factor == 0)
             return '';
@@ -69,7 +85,7 @@ class Term {
     }
 
     gcd(term) {
-        const commonFactor = gcd(Math.abs(this.factor), Math.abs(term.factor));
+        const commonFactor = Term.gcd(Math.abs(this.factor), Math.abs(term.factor));
         let commonVariables = '';
         let othertermVariables = term.variables;
 
@@ -224,8 +240,8 @@ class SimpleFraction {
 }
 
 export function generateCombineSum() {
-    let a = new Term(nonZero(-10, 10), randVariable(0));
-    let b = new Term(nonZero(-10, 10), randVariable(0));
+    let a = new Term(nonZero(-3, 3), randVariable(0));
+    let b = new Term(nonZero(-3, 3), randVariable(0));
     return {
         prompt: `Simplify Sum (1)`,
         problem: `${a.render()} ${b.render(true)} = ?`,
@@ -233,8 +249,8 @@ export function generateCombineSum() {
     };
 }
 
-export function generateCombineSumN(termCount, maxtermSize) {
-    let terms = TermSum.generate(termCount, () => new Term(nonZero(-10, 10), randVariableTerm(maxtermSize)));
+export function generateCombineSumN() {
+    let terms = TermSum.generate(4, Term.generateSimple);
 
     return {
         prompt: `Simplify Sum (2)`,
@@ -243,18 +259,10 @@ export function generateCombineSumN(termCount, maxtermSize) {
     };
 }
 
-function gcd(a, b) {
-    if (b == 0)
-        return a;
-    return gcd(b, a % b);
-}
-
 export function generateFactorOut() {
-    let commonFactor = randInclusive(1, 5);
-    let commonVars = randVariableTerm(2);
+    let commonTerm = Term.generate();
 
-    let terms = TermSum.generate(randInclusive(2, 4),
-        () => new Term(nonZero(-3, 3) * commonFactor, randVariableTerm(2, 3) + commonVars));
+    let terms = TermSum.generate(randInclusive(2, 3),() => Term.generate(commonTerm), true);
 
     const problem = terms.render() + ' = ';
     let steps = [];
@@ -272,11 +280,10 @@ export function generateFactorOut() {
 }
 
 export function generateReduceSimpleFraction() {
-    let commonFactor = randInclusive(1, 5);
-    let commonVars = randVariableTerm(2);
+    let commonTerm = Term.generate();
 
-    let numerator = new TermSum([new Term(nonZero(-3, 3) * commonFactor, randVariableTerm(2, 3) + commonVars)]);
-    let denominator = new Term(nonZero(-3, 3) * commonFactor, randVariableTerm(2, 3) + commonVars);
+    let numerator = new TermSum([Term.generate(commonTerm)]);
+    let denominator = Term.generate(commonTerm);
 
     let fraction = new SimpleFraction(numerator, denominator);
 
@@ -289,13 +296,12 @@ export function generateReduceSimpleFraction() {
 
 
 export function generateReduceFractionSimpleDenominator() {
-    let commonFactor = randInclusive(1, 5);
-    let commonVars = randVariableTerm(2);
+    let commonTerm = Term.generate();
 
     let numerator = TermSum.generate(
         randInclusive(1, 3),
-        () => new Term(nonZero(-3, 3) * commonFactor, randVariableTerm(2, 3) + commonVars));
-    let denominator = new Term(nonZero(-3, 3) * commonFactor, randVariableTerm(2, 3) + commonVars);
+        () => Term.generate(commonTerm));
+    let denominator = Term.generate(commonTerm);
 
     let fraction = new SimpleFraction(numerator, denominator);
     const problem = `${fraction.render()} = `;

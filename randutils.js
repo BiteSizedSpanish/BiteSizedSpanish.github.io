@@ -46,7 +46,7 @@ export function randVariable(seed = null) {
 export function randVariableTerm(maxSize, varRange = null) {
     if (varRange == null)
         varRange = maxSize;
-    let size = randInclusive(1, maxSize);
+    let size = randInclusive(0, maxSize);
     let group = '';
     for (let i = 0; i < size; i++) {
         group += randVariable(rand(varRange));
