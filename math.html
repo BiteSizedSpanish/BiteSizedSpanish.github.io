@@ -25,6 +25,8 @@
             padding: 5rem;
             box-sizing: border-box;
             font-size: 3rem;
+            background-color: black;
+            color: white;
         }
 
         mjx-container {
@@ -50,10 +52,10 @@
             initRandom();
 
             const generators = [
-                // generateCombineSum,
-                // () => generateCombineSumN(5, 2),
-                // generateFactorOut,
-                // generateReduceSimpleFraction,
+                generateCombineSum,
+                () => generateCombineSumN(5, 2),
+                generateFactorOut,
+                generateReduceSimpleFraction,
                 generateReduceFractionSimpleDenominator,
             ]
 

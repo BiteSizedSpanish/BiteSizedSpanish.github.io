@@ -122,13 +122,15 @@ class TermSum {
     }
 
     renderFactoredOut(commonTerm = null) {
-        if (this.gcd().isOne() || this.terms.length <= 1)
-            return this.render();
-
+        
         if (commonTerm == null)
             commonTerm = this.gcd();
         else
-            commonTerm = commonTerm.gcd(this.gcd());
+        commonTerm = commonTerm.gcd(this.gcd());
+
+        if (commonTerm.isOne() || this.terms.length <= 1)
+            return this.render();
+
         return `${commonTerm.render()}(${this.divide(commonTerm).render()})`;
     }
 
@@ -225,7 +227,7 @@ export function generateCombineSum() {
     let a = new Term(nonZero(-10, 10), randVariable(0));
     let b = new Term(nonZero(-10, 10), randVariable(0));
     return {
-        prompt: `Simplify`,
+        prompt: `Simplify Sum (1)`,
         problem: `${a.render()} ${b.render(true)} = ?`,
         solution: `${a.add(b).render()}`
     };
@@ -235,7 +237,7 @@ export function generateCombineSumN(termCount, maxtermSize) {
     let terms = TermSum.generate(termCount, () => new Term(nonZero(-10, 10), randVariableTerm(maxtermSize)));
 
     return {
-        prompt: `Simplify`,
+        prompt: `Simplify Sum (2)`,
         problem: terms.render() + ' = ',
         solution: terms.simplify().render(),
     };
@@ -254,17 +256,17 @@ export function generateFactorOut() {
     let terms = TermSum.generate(randInclusive(2, 4),
         () => new Term(nonZero(-3, 3) * commonFactor, randVariableTerm(2, 3) + commonVars));
 
-    const commonTerm = terms.simplify().gcd();
-
+    const problem = terms.render() + ' = ';
     let steps = [];
-    if (terms.canSimplify()) {
-        steps.push(`${terms.simplify().render()} = `)
+    if (terms.canSimplify() && terms.canFactorOut()) {
+        terms = terms.simplify();
+        steps.push(`${terms.render()} = `)
     }
 
     return {
         prompt: `Factor out the common factor`,
-        problem: terms.render() + ' = ',
-        solution: `${commonTerm.render()}(${terms.simplify().divide(commonTerm).render()})`,
+        problem,
+        solution: terms.renderFactoredOut(),
         steps,
     };
 }
@@ -279,8 +281,8 @@ export function generateReduceSimpleFraction() {
     let fraction = new SimpleFraction(numerator, denominator);
 
     return {
-        prompt: `Simplify`,
-        problem: `(${fraction.render()}) = ?`,
+        prompt: `Simplify (1)`,
+        problem: `${fraction.render()} = ?`,
         solution: `${fraction.reduce().render()}`
     };
 }
@@ -314,7 +316,7 @@ export function generateReduceFractionSimpleDenominator() {
     }
 
     return {
-        prompt: `Simplify`,
+        prompt: `Simplify (2)`,
         problem,
         solution: `${fraction.render()}`,
         steps,
