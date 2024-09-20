@@ -30,6 +30,10 @@
         mjx-container {
             font-size: 1em !important;
         }
+        
+        div {
+            padding: 1rem;
+        }
     </style>
 </head>
 
@@ -37,7 +41,7 @@
 
     <script type="module">
         import { initRandom, rand } from './randutils.js';
-        import { generateCombineSum, generateCombineSumN, generateFactorOut } from './problemgenerator.js';
+        import { generateCombineSum, generateCombineSumN, generateFactorOut, generateReduceSimpleFraction, generateReduceFractionSimpleDenominator } from './problemgenerator.js';
 
         let state = -1;
         let hideProblem = true;
@@ -48,7 +52,9 @@
             const generators = [
                 // generateCombineSum,
                 // () => generateCombineSumN(5, 2),
-                generateFactorOut,
+                // generateFactorOut,
+                // generateReduceSimpleFraction,
+                generateReduceFractionSimpleDenominator,
             ]
 
             let { prompt, problem, solution, steps } = generators[rand(generators.length)]();

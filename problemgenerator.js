@@ -1,6 +1,6 @@
-import { nonZero, randVariableGroup, randVariable, randInclusive } from "./randutils.js";
+import { nonZero, randVariableTerm, randVariable, randInclusive } from "./randutils.js";
 
-class Group {
+class Term {
     constructor(factor, variables) {
         this.factor = factor;
         this.variables = variables.split("").sort().join("");
@@ -48,19 +48,19 @@ class Group {
         return result;
     }
 
-    add(group) {
-        if (group.variables != this.variables)
+    add(term) {
+        if (term.variables != this.variables)
             return null;
-        return new Group(this.factor + group.factor, this.variables);
+        return new Term(this.factor + term.factor, this.variables);
     }
 
-    multiply(group) {
-        return new Group(this.factor * group.factor, this.variables + group.variables);
+    multiply(term) {
+        return new Term(this.factor * term.factor, this.variables + term.variables);
     }
 
-    divide(group) {
-        const result = new Group(this.factor / group.factor, this.variables);
-        for (let curVar of group.variables) {
+    divide(term) {
+        const result = new Term(this.factor / term.factor, this.variables);
+        for (let curVar of term.variables) {
             if (!result.variables.includes(curVar))
                 return null;
             result.variables = result.variables.replace(curVar, '');
@@ -68,24 +68,162 @@ class Group {
         return result;
     }
 
-    gcd(group) {
-        const commonFactor = gcd(Math.abs(this.factor), Math.abs(group.factor));
+    gcd(term) {
+        const commonFactor = gcd(Math.abs(this.factor), Math.abs(term.factor));
         let commonVariables = '';
-        let otherGroupVariables = group.variables;
+        let othertermVariables = term.variables;
 
         for (let curVar of this.variables) {
-            if (otherGroupVariables.includes(curVar)) {
+            if (othertermVariables.includes(curVar)) {
                 commonVariables += curVar;
-                otherGroupVariables = otherGroupVariables.replace(curVar, '');
+                othertermVariables = othertermVariables.replace(curVar, '');
             }
         }
-        return new Group(commonFactor, commonVariables);
+        return new Term(commonFactor, commonVariables);
+    }
+
+    isZero() {
+        return this.factor == 0;
+    }
+
+    isOne() {
+        return this.factor == 1 && this.variables.length == 0;
+    }
+}
+
+class TermSum {
+    constructor(terms = []) {
+        this.terms = terms.filter(t => t.factor != 0);
+    }
+
+    static generate(n, termGenerator, uniqueTerms = false) {
+        let result = new TermSum();
+        while (result.terms.length < n) {
+            result.push(termGenerator());
+            if (uniqueTerms)
+                result = result.simplify();
+        }
+        return result;
+    }
+
+    push(term) {
+        if (term.factor != 0)
+            this.terms.push(term);
+    }
+
+    render() {
+        let asOperand = false;
+        let result = '';
+        for (let term of this.terms) {
+            result += ` ${term.render(asOperand)}`;
+            asOperand = true;
+        }
+        return result;
+    }
+
+    renderFactoredOut(commonTerm = null) {
+        if (this.gcd().isOne() || this.terms.length <= 1)
+            return this.render();
+
+        if (commonTerm == null)
+            commonTerm = this.gcd();
+        else
+            commonTerm = commonTerm.gcd(this.gcd());
+        return `${commonTerm.render()}(${this.divide(commonTerm).render()})`;
+    }
+
+    canSimplify() {
+        return this.terms.length > this.simplify().terms.length;
+    }
+
+    simplify() {
+        const result = [];
+        for (let term of this.terms) {
+            let found = false;
+            for (let j = 0; j < result.length; j++) {
+                if (result[j].add(term)) {
+                    result[j] = result[j].add(term);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                result.push(term);
+        }
+        return new TermSum(result);
+    }
+
+    canFactorOut() {
+        return !this.gcd().isOne() && this.terms.length > 1;
+    }
+
+    gcd() {
+        if (this.terms.length == 0)
+            return new Term(1, '');
+        let commonterm = new Term(Math.abs(this.terms[0].factor), this.terms[0].variables);
+        for (let term of this.terms) {
+            commonterm = commonterm.gcd(term);
+        }
+        return commonterm;
+    }
+
+    divide(divisor) {
+        const result = new TermSum();
+        for (let term of this.terms) {
+            result.push(term.divide(divisor));
+        }
+        return result;
+    }
+}
+
+class SimpleFraction {
+    constructor(numerator, denominator, sign = '') {
+        this.numerator = numerator;
+        this.denominator = denominator;
+        this.sign = sign;
+    }
+
+    render() {
+        if (this.numerator.terms.length == 0)
+            return '0';
+        if (this.denominator.factor == 1 && this.denominator.variables.length == 0)
+            return this.sign + this.numerator.render();
+
+        return `${this.sign}(${this.numerator.render()}) / (${this.denominator.render()})`;
+    }
+
+    renderFactoredOut() {
+        return `${this.sign}(${this.numerator.renderFactoredOut()}) / (${this.denominator.render()})`;
+    }
+
+    simplifyNumerator() {
+        return new SimpleFraction(this.numerator.simplify(), this.denominator, this.sign);
+    }
+
+    canReduce() {
+        return !this.numerator.gcd().gcd(this.denominator).isOne();
+    }
+
+    reduce() {
+        const commonterm = this.numerator.gcd().gcd(this.denominator);
+
+        const num = this.numerator.divide(commonterm);
+        const den = this.denominator.divide(commonterm);
+
+        let sign = ''
+        if (num.terms.length == 1) {
+            sign = num.terms[0].factor * den.factor < 0 ? '-' : '';
+            num.terms[0].factor = Math.abs(num.terms[0].factor);
+            den.factor = Math.abs(den.factor);
+        }
+
+        return new SimpleFraction(num, den, sign);
     }
 }
 
 export function generateCombineSum() {
-    let a = new Group(nonZero(-10, 10), randVariable(0));
-    let b = new Group(nonZero(-10, 10), randVariable(0));
+    let a = new Term(nonZero(-10, 10), randVariable(0));
+    let b = new Term(nonZero(-10, 10), randVariable(0));
     return {
         prompt: `Simplify`,
         problem: `${a.render()} ${b.render(true)} = ?`,
@@ -93,46 +231,14 @@ export function generateCombineSum() {
     };
 }
 
-export function generateCombineSumN(groupCount, maxGroupSize) {
-    let groups = [];
-    for (let i = 0; i < groupCount; i++) {
-        groups.push(new Group(nonZero(-10, 10), randVariableGroup(maxGroupSize)));
-    }
+export function generateCombineSumN(termCount, maxtermSize) {
+    let terms = TermSum.generate(termCount, () => new Term(nonZero(-10, 10), randVariableTerm(maxtermSize)));
 
     return {
         prompt: `Simplify`,
-        problem: renderAdditiveGroups(groups) + ' = ',
-        solution: renderAdditiveGroups(simplify(groups)),
+        problem: terms.render() + ' = ',
+        solution: terms.simplify().render(),
     };
-}
-
-function simplify(groups) {
-    const result = [];
-    for (let i = 0; i < groups.length; i++) {
-        let found = false;
-        for (let j = 0; j < result.length; j++) {
-            const addResult = result[j].add(groups[i]);
-            if (addResult) {
-                result[j] = addResult;
-                found = true;
-                break;
-            }
-        }
-        if (!found)
-            result.push(groups[i]);
-    }
-    return result
-}
-
-function renderAdditiveGroups(groups) {
-    let asOperand = false;
-    let result = '';
-    for (let group of groups) {
-        result += ` ${group.render(asOperand)}`;
-        if (result.trim().length > 0)
-            asOperand = true;
-    }
-    return result;
 }
 
 function gcd(a, b) {
@@ -143,24 +249,74 @@ function gcd(a, b) {
 
 export function generateFactorOut() {
     let commonFactor = randInclusive(1, 5);
-    let commonVars = randVariableGroup(2);
+    let commonVars = randVariableTerm(2);
 
-    let groups = [];
-    for (let i = 0; i < 3; i++) {
-        const f = nonZero(-3, 3 );
-        groups.push(new Group(f * commonFactor, randVariableGroup(2, 3) + commonVars));
-    }
-    groups = simplify(groups);
+    let terms = TermSum.generate(randInclusive(2, 4),
+        () => new Term(nonZero(-3, 3) * commonFactor, randVariableTerm(2, 3) + commonVars));
 
-    let commonGroup = groups[0];
-    commonGroup.factor = Math.abs(commonGroup.factor);
-    for (let group of groups) {
-        commonGroup = commonGroup.gcd(group);
+    const commonTerm = terms.simplify().gcd();
+
+    let steps = [];
+    if (terms.canSimplify()) {
+        steps.push(`${terms.simplify().render()} = `)
     }
 
     return {
         prompt: `Factor out the common factor`,
-        problem: renderAdditiveGroups(groups),
-        solution: `${commonGroup.render()}(${renderAdditiveGroups(simplify(groups.map(g => g.divide(commonGroup))))})`
+        problem: terms.render() + ' = ',
+        solution: `${commonTerm.render()}(${terms.simplify().divide(commonTerm).render()})`,
+        steps,
+    };
+}
+
+export function generateReduceSimpleFraction() {
+    let commonFactor = randInclusive(1, 5);
+    let commonVars = randVariableTerm(2);
+
+    let numerator = new TermSum([new Term(nonZero(-3, 3) * commonFactor, randVariableTerm(2, 3) + commonVars)]);
+    let denominator = new Term(nonZero(-3, 3) * commonFactor, randVariableTerm(2, 3) + commonVars);
+
+    let fraction = new SimpleFraction(numerator, denominator);
+
+    return {
+        prompt: `Simplify`,
+        problem: `(${fraction.render()}) = ?`,
+        solution: `${fraction.reduce().render()}`
+    };
+}
+
+
+export function generateReduceFractionSimpleDenominator() {
+    let commonFactor = randInclusive(1, 5);
+    let commonVars = randVariableTerm(2);
+
+    let numerator = TermSum.generate(
+        randInclusive(1, 3),
+        () => new Term(nonZero(-3, 3) * commonFactor, randVariableTerm(2, 3) + commonVars));
+    let denominator = new Term(nonZero(-3, 3) * commonFactor, randVariableTerm(2, 3) + commonVars);
+
+    let fraction = new SimpleFraction(numerator, denominator);
+    const problem = `${fraction.render()} = `;
+
+    let steps = [];
+    if (fraction.numerator.canSimplify()) {
+        fraction = fraction.simplifyNumerator();
+        steps.push(`${fraction.render()} = `)
+    }
+
+    if (fraction.canReduce()) {
+        if (fraction.numerator.canFactorOut())
+            steps.push(`${fraction.renderFactoredOut()} = `)
+        fraction = fraction.reduce();
+        if (fraction.numerator.canFactorOut()) {
+            steps.push(`${fraction.renderFactoredOut()} = `)
+        }
+    }
+
+    return {
+        prompt: `Simplify`,
+        problem,
+        solution: `${fraction.render()}`,
+        steps,
     };
 }

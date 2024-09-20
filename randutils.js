@@ -43,7 +43,7 @@ export function randVariable(seed = null) {
     return pickRandomUnique(['a', 'b', 'c', 'x', 'y', 'z'], seed ?? rand(6));
 }
 
-export function randVariableGroup(maxSize, varRange = null) {
+export function randVariableTerm(maxSize, varRange = null) {
     if (varRange == null)
         varRange = maxSize;
     let size = randInclusive(1, maxSize);
@@ -65,6 +65,8 @@ export function randInclusive(min, max) {
 export function nonZero(min, max) {
     while (true) {
         let result = randInclusive(min, max);
+        if (Math.random() < 0.3) // slightly prefer positives
+            result = Math.abs(result);
         if (result != 0)
             return result;
     }
