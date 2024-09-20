@@ -51,10 +51,26 @@
             generateReduceFractionSimpleDenominator,
             generateExpandFactoredTermSum,
             generateExpandTermSumProduct,
+            generateAddFractionSimple,
         } from './problemgenerator.js';
 
         let state = -1;
         let hideProblem = true;
+
+        function filterDuplicateSteps(steps, problem, solution) {
+            problem = problem.trim().replaceAll(' ', '');
+            solution = solution.trim().replaceAll(' ', '');
+            let filtered = [];
+            for (let step of steps) {
+                const trimmedStep = step.replace('=', '').trim().replaceAll(' ', '');
+                if (trimmedStep === problem || trimmedStep === solution)
+                    continue;
+                if (filtered.length > 0 && filtered[filtered.length - 1] === step)
+                    continue;
+                filtered.push(step);
+            }
+            return filtered;
+        }
 
         async function renderRandom() {
             initRandom();
@@ -66,7 +82,8 @@
                 // generateReduceSimpleFraction,
                 // generateReduceFractionSimpleDenominator,
                 // generateExpandFactoredTermSum,
-                generateExpandTermSumProduct
+                // generateExpandTermSumProduct,
+                generateAddFractionSimple,
             ]
 
             let { prompt, problem, solution, steps } = generators[rand(generators.length)]();
@@ -85,6 +102,7 @@
             }
 
             if (steps) {
+                steps = filterDuplicateSteps(steps, problem, solution);
                 for (let step of steps) {
                     document.getElementById('steps').innerHTML += '<div style="display: none;">`' + step + '`</div>';
                 }

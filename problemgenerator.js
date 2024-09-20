@@ -21,7 +21,7 @@ class Term {
             return a;
         return Term.gcd(b, a % b);
     }
-    
+
     render(asOperand = false) {
         if (this.factor == 0)
             return '';
@@ -127,6 +127,14 @@ class TermSum {
             this.terms.push(term);
     }
 
+    add(termSum) {
+        const result = new TermSum(this.terms);
+        for (let term of termSum.terms) {
+            result.push(term);
+        }
+        return result
+    }
+
     render() {
         let asOperand = false;
         let result = '';
@@ -138,11 +146,11 @@ class TermSum {
     }
 
     renderFactoredOut(commonTerm = null) {
-        
+
         if (commonTerm == null)
             commonTerm = this.gcd();
         else
-        commonTerm = commonTerm.gcd(this.gcd());
+            commonTerm = commonTerm.gcd(this.gcd());
 
         if (commonTerm.isOne() || this.terms.length <= 1)
             return this.render();
@@ -154,7 +162,7 @@ class TermSum {
         return this.terms.length > this.simplify().terms.length;
     }
 
-    simplify() {
+    simplify(steps = []) {
         const result = [];
         for (let term of this.terms) {
             let found = false;
@@ -167,6 +175,10 @@ class TermSum {
             }
             if (!found)
                 result.push(term);
+        }
+        if (result.length < this.terms.length) {
+            steps.push(`${this.render()} = `)
+            steps.push(`${new TermSum(result).render()} = `)
         }
         return new TermSum(result);
     }
@@ -232,12 +244,19 @@ class SimpleFraction {
         return !this.numerator.gcd().gcd(this.denominator).isOne();
     }
 
-    reduce() {
+    reduce(steps = []) {
+        if (!this.canReduce()) {
+            return this;
+        }
         const commonterm = this.numerator.gcd().gcd(this.denominator);
-
+        if (!commonterm.isOne()) {
+            steps.push(`${this.render()} = `)
+            steps.push(`${this.renderFactoredOut()} = `)
+        }
+        
         const num = this.numerator.divide(commonterm);
         const den = this.denominator.divide(commonterm);
-
+        
         let sign = ''
         if (num.terms.length == 1) {
             sign = num.terms[0].factor * den.factor < 0 ? '-' : '';
@@ -245,7 +264,14 @@ class SimpleFraction {
             den.factor = Math.abs(den.factor);
         }
 
-        return new SimpleFraction(num, den, sign);
+        const result = new SimpleFraction(num, den, sign);
+
+        if (result.numerator.canFactorOut()) {
+            steps.push(`${result.renderFactoredOut()} = `)
+            steps.push(`${result.render()} = `)
+        }
+
+        return result;
     }
 }
 
@@ -270,23 +296,19 @@ export function generateCombineSumN() {
 }
 
 export function generateFactorOut() {
-    let commonTerm = Term.generate();
-
-    let terms = TermSum.generate(randInclusive(2, 3),() => Term.generate(commonTerm), true);
-
-    const problem = terms.render() + ' = ';
-    let steps = [];
-    if (terms.canSimplify() && terms.canFactorOut()) {
-        terms = terms.simplify();
-        steps.push(`${terms.render()} = `)
-    }
-
-    return {
+    const result = {
         prompt: `Factor out the common factor`,
-        problem,
-        solution: terms.renderFactoredOut(),
-        steps,
+        steps: [],
     };
+
+    let commonTerm = Term.generate();
+    let terms = TermSum.generate(randInclusive(2, 3), () => Term.generate(commonTerm), true);
+
+    result.problem = `${terms.render()} = `;
+    terms = terms.simplify(result.steps);
+    result.solution = terms.renderFactoredOut();
+
+    return result;
 }
 
 export function generateReduceSimpleFraction() {
@@ -306,6 +328,11 @@ export function generateReduceSimpleFraction() {
 
 
 export function generateReduceFractionSimpleDenominator() {
+    const result = {
+        prompt: `Simplify (2)`,
+        steps: [],
+    };
+
     let commonTerm = Term.generate();
 
     let numerator = TermSum.generate(
@@ -314,34 +341,23 @@ export function generateReduceFractionSimpleDenominator() {
     let denominator = Term.generate(commonTerm);
 
     let fraction = new SimpleFraction(numerator, denominator);
-    const problem = `${fraction.render()} = `;
+    result.problem = `${fraction.render()} = `;
 
-    let steps = [];
     if (fraction.numerator.canSimplify()) {
         fraction = fraction.simplifyNumerator();
-        steps.push(`${fraction.render()} = `)
+        result.steps.push(`${fraction.render()} = `)
     }
 
-    if (fraction.canReduce()) {
-        if (fraction.numerator.canFactorOut())
-            steps.push(`${fraction.renderFactoredOut()} = `)
-        fraction = fraction.reduce();
-        if (fraction.numerator.canFactorOut()) {
-            steps.push(`${fraction.renderFactoredOut()} = `)
-        }
-    }
+    fraction = fraction.reduce(result.steps);
 
-    return {
-        prompt: `Simplify (2)`,
-        problem,
-        solution: `${fraction.render()}`,
-        steps,
-    };
+    result.solution = `${fraction.render()}`;
+
+    return result;
 }
 
 export function generateExpandFactoredTermSum() {
     let commonTerm = Term.generate();
-    let sum = TermSum.generate(randInclusive(2,3), () => Term.generate(commonTerm), true);
+    let sum = TermSum.generate(randInclusive(2, 3), () => Term.generate(commonTerm), true);
 
     return {
         prompt: `Expand (1)`,
@@ -351,19 +367,47 @@ export function generateExpandFactoredTermSum() {
 }
 
 export function generateExpandTermSumProduct() {
+    const result = {
+        prompt: `Expand (2)`,
+        steps: [],
+    }
+
     let sum1 = TermSum.generate(2, Term.generateSimple, true);
     let sum2 = TermSum.generate(2, Term.generateSimple, true);
 
-    steps = [];
-    if (sum1.multiply(sum2).terms.length > sum1.multiply(sum2).simplify().terms.length) {
-        steps.push(`${sum1.multiply(sum2).render()} = `)
-    }
+    result.problem = `(${sum1.render()}) * (${sum2.render()}) = `;
 
-    return {
-        prompt: `Expand (2)`,
-        problem: `(${sum1.render()}) * (${sum2.render()}) = `,
-        steps,
-        solution: `${sum1.multiply(sum2).simplify().render()}`
-    };
+    result.solution = `${sum1.multiply(sum2).simplify(result.steps).render()}`;
+
+    return result;
 }
 
+export function generateAddFractionSimple() {
+    const result = {
+        prompt: `Add Fraction (1)`,
+        steps: [],
+    };
+
+    let denominator = Term.generate();
+    let numerator1 = TermSum.generate(randInclusive(1, 2), Term.generateSimple, true);
+    let numerator2 = TermSum.generate(randInclusive(1, 2), Term.generateSimple, true);
+
+    let fraction1 = new SimpleFraction(numerator1, denominator);
+    let fraction2 = new SimpleFraction(numerator2, denominator);
+
+    
+    result.problem = `${fraction1.render()} + ${fraction2.render()} = `;
+    
+    let sum = new SimpleFraction(numerator1.add(numerator2), denominator);
+
+    if (sum.numerator.canSimplify()) {
+        result.steps.push(`${sum.render()} = `)
+        sum = sum.simplifyNumerator();
+    }
+
+    sum = sum.reduce(result.steps);
+
+    result.solution = `${sum.render()}`;
+
+    return result;
+}
