@@ -146,9 +146,11 @@ export function generateFactorOut() {
     let commonVars = randVariableGroup(2);
 
     let groups = [];
-    for (let i = 0; i < 5; i++) {
-        groups.push(new Group(nonZero(-10, 10) * commonFactor, randVariableGroup(2, 3) + commonVars));
+    for (let i = 0; i < 3; i++) {
+        const f = nonZero(-3, 3 );
+        groups.push(new Group(f * commonFactor, randVariableGroup(2, 3) + commonVars));
     }
+    groups = simplify(groups);
 
     let commonGroup = groups[0];
     commonGroup.factor = Math.abs(commonGroup.factor);
@@ -159,9 +161,6 @@ export function generateFactorOut() {
     return {
         prompt: `Factor out the common factor`,
         problem: renderAdditiveGroups(groups),
-        steps: [
-            `${commonGroup.render()}(${renderAdditiveGroups(groups.map(g => g.divide(commonGroup)))})`
-        ],
         solution: `${commonGroup.render()}(${renderAdditiveGroups(simplify(groups.map(g => g.divide(commonGroup))))})`
     };
 }
