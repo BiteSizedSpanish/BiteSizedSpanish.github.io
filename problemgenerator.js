@@ -192,6 +192,16 @@ class TermSum {
         }
         return result;
     }
+
+    multiply(termSum) {
+        const result = new TermSum();
+        for (let term1 of this.terms) {
+            for (let term2 of termSum.terms) {
+                result.push(term1.multiply(term2));
+            }
+        }
+        return result;
+    }
 }
 
 class SimpleFraction {
@@ -328,3 +338,32 @@ export function generateReduceFractionSimpleDenominator() {
         steps,
     };
 }
+
+export function generateExpandFactoredTermSum() {
+    let commonTerm = Term.generate();
+    let sum = TermSum.generate(randInclusive(2,3), () => Term.generate(commonTerm), true);
+
+    return {
+        prompt: `Expand (1)`,
+        problem: `${sum.renderFactoredOut()} = `,
+        solution: `${sum.render()}`
+    };
+}
+
+export function generateExpandTermSumProduct() {
+    let sum1 = TermSum.generate(2, Term.generateSimple, true);
+    let sum2 = TermSum.generate(2, Term.generateSimple, true);
+
+    steps = [];
+    if (sum1.multiply(sum2).terms.length > sum1.multiply(sum2).simplify().terms.length) {
+        steps.push(`${sum1.multiply(sum2).render()} = `)
+    }
+
+    return {
+        prompt: `Expand (2)`,
+        problem: `(${sum1.render()}) * (${sum2.render()}) = `,
+        steps,
+        solution: `${sum1.multiply(sum2).simplify().render()}`
+    };
+}
+
