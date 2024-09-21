@@ -36,6 +36,16 @@
         div {
             padding: 1rem;
         }
+
+        #solution {
+            border: 1px solid white;
+        }
+
+        textarea {
+            background-color: black;
+            color: white;
+            border: 1px solid white;
+        }
     </style>
 </head>
 
@@ -59,11 +69,11 @@
         let hideProblem = true;
 
         function filterDuplicateSteps(steps, problem, solution) {
-            problem = problem.trim().replaceAll(' ', '');
-            solution = solution.trim().replaceAll(' ', '');
+            problem = problem.replaceAll('=', '').trim().replaceAll(' ', '');
+            solution = solution.replaceAll('=', '').trim().replaceAll(' ', '');
             let filtered = [];
             for (let step of steps) {
-                const trimmedStep = step.replace('=', '').trim().replaceAll(' ', '');
+                const trimmedStep = step.replaceAll('=', '').trim().replaceAll(' ', '');
                 if (trimmedStep === problem || trimmedStep === solution)
                     continue;
                 if (filtered.length > 0 && filtered[filtered.length - 1] === step)
@@ -77,14 +87,14 @@
             initRandom();
 
             const generators = [
-                // generateCombineSum,
-                // generateCombineSumN,
-                // generateFactorOut,
-                // generateReduceSimpleFraction,
-                // generateReduceFractionSimpleDenominator,
-                // generateExpandFactoredTermSum,
-                // generateExpandTermSumProduct,
-                // generateAddFractionSimple,
+                generateCombineSum,
+                generateCombineSumN,
+                generateFactorOut,
+                generateReduceSimpleFraction,
+                generateReduceFractionSimpleDenominator,
+                generateExpandFactoredTermSum,
+                generateExpandTermSumProduct,
+                generateAddFractionSimple,
                 generateAddFraction,
             ]
 
@@ -118,6 +128,7 @@
             if (state == 0) {
                 document.getElementById('problem').style.display = 'block';
                 document.getElementById('steps').innerHTML = '';
+                document.getElementById('notes').value = '';
                 document.getElementById('solution').style.display = 'none';
                 renderRandom();
             } else if (document.getElementById('steps').childElementCount >= state) {
@@ -135,6 +146,8 @@
     <div id="problem" style="display: block;"> </div>
     <div id="steps" style="display: block;"> </div>
     <div id="solution" style="display: none;"> </div>
+
+    <textarea id="notes" style="width: 100%; height: 10rem; font-size: 1rem; margin-top: 1rem;" placeholder="Notes" onclick="event.stopPropagation()"></textarea>
 
 </body>
 

@@ -266,7 +266,12 @@ class SimpleFraction {
     }
 
     simplifyNumerator(steps = []) {
-        return new SimpleFraction(this.numerator.simplify(steps), this.denominator, this.sign);
+        const result = new SimpleFraction(this.numerator.simplify(), this.denominator, this.sign);
+        if (this.numerator.canSimplify()) {
+            steps.push(`${this.render()} = `)
+            steps.push(`${result.render()} = `)
+        }
+        return result;
     }
 
     canReduce() {
@@ -480,4 +485,8 @@ export function generateAddFraction() {
     result.solution = `${sum.render()}`;
 
     return result;
+}
+
+export function generateMultiplyFraction() {
+    // TODO
 }
