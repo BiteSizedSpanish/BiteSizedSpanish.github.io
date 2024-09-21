@@ -3,6 +3,12 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Simple Math Trainer">
+    <meta name="keywords" content="Math, Algebra, Practice">
+    <meta name="author" content="Matthias Bergmann">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Math Trainer</title>
     <script>
         MathJax = {
             loader: { load: ['input/asciimath', 'output/chtml', 'ui/menu'] },
@@ -30,14 +36,27 @@
         }
 
         #prompt {
-            font-size: 3rem;
-        }
-        mjx-container {
-            font-size: 3rem !important;
+            font-size: 1.5rem;
         }
 
-        div {
-            padding: 1rem;
+        mjx-container {
+            font-size: 1.5rem !important;
+        }
+
+        @media screen and (min-width: 600px) {
+            #prompt {
+                font-size: 3rem;
+            }
+
+            mjx-container {
+                font-size: 2.5rem !important;
+            }
+
+            #content,
+            #steps {
+                display: grid;
+                gap: 2rem;
+            }
         }
 
         textarea {
@@ -50,11 +69,7 @@
         }
 
         #stats {
-            padding: 1rem;
             font-size: 16px;
-            position: absolute;
-            left: 0;
-            top: 0;
             font-family: monospace;
             text-align: start;
         }
@@ -67,8 +82,7 @@
         button {
             background-color: black;
             color: white;
-            padding: 1rem;
-            font-size: 2rem;
+            padding: .5rem;
             border: 1px solid white;
             width: 100%;
             cursor: pointer;
@@ -77,11 +91,22 @@
         svg {
             stroke: white;
             fill: white;
+            width: 20px;
+        }
+
+        #content,
+        #steps {
+            display: grid;
+            gap: 1rem;
+        }
+
+        * {
+            box-sizing: border-box;
         }
     </style>
 </head>
 
-<body onclick='window.onBodyClicked()' style="min-width: 100vw; min-height:100vh;">
+<body onclick='window.onBodyClicked()'>
 
     <script type="module">
         import { initRandom, rand } from './randutils.js';
@@ -194,31 +219,33 @@
 
     </script>
 
-    <div id="prompt"></div>
-    <div id="problem" style="display: block;"> </div>
-    <div id="steps" style="display: block;"> </div>
-    <div id="solution" style="display: none;"> </div>
-    <div id="feedback" style="display: none;">
-        <div>
-            <button onclick="event.stopPropagation();newProblem(false)"><svg xmlns="http://www.w3.org/2000/svg" x="0px"
-                    y="0px" width="40" height="40" viewBox="0 0 30 30">
-                    <path
-                        d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z">
-                    </path>
-                </svg></button>
-            <button onclick="event.stopPropagation();newProblem(true)"><svg xmlns="http://www.w3.org/2000/svg" x="0px"
-                    y="0px" width="50" height="50" viewBox="0 0 50 50" color="white" style="stroke: white;fill: white;">
-                    <path
-                        d="M 41.9375 8.625 C 41.273438 8.648438 40.664063 9 40.3125 9.5625 L 21.5 38.34375 L 9.3125 27.8125 C 8.789063 27.269531 8.003906 27.066406 7.28125 27.292969 C 6.5625 27.515625 6.027344 28.125 5.902344 28.867188 C 5.777344 29.613281 6.078125 30.363281 6.6875 30.8125 L 20.625 42.875 C 21.0625 43.246094 21.640625 43.410156 22.207031 43.328125 C 22.777344 43.242188 23.28125 42.917969 23.59375 42.4375 L 43.6875 11.75 C 44.117188 11.121094 44.152344 10.308594 43.78125 9.644531 C 43.410156 8.984375 42.695313 8.589844 41.9375 8.625 Z">
-                    </path>
-                </svg></button>
+    <div id="content">
+        <div id="stats"></div>
+        <div id="prompt"></div>
+        <div id="problem" style="display: block;"> </div>
+        <div id="steps"> </div>
+        <div id="solution" style="display: none;"> </div>
+        <div id="feedback" style="display: none;">
+            <div>
+                <button onclick="event.stopPropagation();newProblem(false)"><svg xmlns="http://www.w3.org/2000/svg"
+                        x="0px" y="0px" width="40" height="40" viewBox="0 0 30 30">
+                        <path
+                            d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z">
+                        </path>
+                    </svg></button>
+                <button onclick="event.stopPropagation();newProblem(true)"><svg xmlns="http://www.w3.org/2000/svg"
+                        x="0px" y="0px" width="50" height="50" viewBox="0 0 50 50" color="white"
+                        style="stroke: white;fill: white;">
+                        <path
+                            d="M 41.9375 8.625 C 41.273438 8.648438 40.664063 9 40.3125 9.5625 L 21.5 38.34375 L 9.3125 27.8125 C 8.789063 27.269531 8.003906 27.066406 7.28125 27.292969 C 6.5625 27.515625 6.027344 28.125 5.902344 28.867188 C 5.777344 29.613281 6.078125 30.363281 6.6875 30.8125 L 20.625 42.875 C 21.0625 43.246094 21.640625 43.410156 22.207031 43.328125 C 22.777344 43.242188 23.28125 42.917969 23.59375 42.4375 L 43.6875 11.75 C 44.117188 11.121094 44.152344 10.308594 43.78125 9.644531 C 43.410156 8.984375 42.695313 8.589844 41.9375 8.625 Z">
+                        </path>
+                    </svg></button>
+            </div>
         </div>
+
+        <textarea id="notes" placeholder="Notes" onclick="event.stopPropagation()"></textarea>
     </div>
 
-    <textarea id="notes" placeholder="Notes"
-        onclick="event.stopPropagation()"></textarea>
-
-    <div id="stats"></div>
 
 </body>
 
