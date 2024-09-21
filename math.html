@@ -74,9 +74,9 @@
             text-align: start;
         }
 
-        #feedback>div {
+        #actions>div {
             display: flex;
-            justify-content: space-around;
+            width: 100%;
         }
 
         button {
@@ -106,7 +106,7 @@
     </style>
 </head>
 
-<body onclick='window.onBodyClicked()'>
+<body>
 
     <script type="module">
         import { initRandom, rand } from './randutils.js';
@@ -185,13 +185,14 @@
             document.getElementById('steps').innerHTML = '';
             document.getElementById('notes').value = '';
             document.getElementById('solution').style.display = 'none';
+            document.getElementById('next').style.display = 'flex';
             document.getElementById('feedback').style.display = 'none';
             recordPlayed(wasCorrect);
             refreshStats();
             renderRandom();
         }
 
-        window.onBodyClicked = () => {
+        window.showNextStep = () => {
             if (step > document.getElementById('steps').childElementCount)
                 return;
             step++;
@@ -200,7 +201,8 @@
                 if (hideProblemWhenDone)
                     document.getElementById('problem').style.display = 'none';
                 document.getElementById('solution').style.display = 'block';
-                document.getElementById('feedback').style.display = 'block';
+                document.getElementById('next').style.display = 'none';
+                document.getElementById('feedback').style.display = 'flex';
             } else {
                 document.getElementById('steps').children[step - 1].style.display = 'block';
             }
@@ -225,17 +227,25 @@
         <div id="problem" style="display: block;"> </div>
         <div id="steps"> </div>
         <div id="solution" style="display: none;"> </div>
-        <div id="feedback" style="display: none;">
-            <div>
-                <button onclick="event.stopPropagation();newProblem(false)"><svg xmlns="http://www.w3.org/2000/svg"
-                        x="0px" y="0px" width="40" height="40" viewBox="0 0 30 30">
+        <div id="actions">
+            <div id="next">
+                <button onclick="showNextStep()"><svg xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" height="50" viewBox="0 0 22 32.5">
+                        <g>
+                            <path
+                                d="M11,0 C11.5128358,0 11.9355072,0.38604019 11.9932723,0.883378875 L12,1 L12,22.584 L20.2928932,14.2928932 C20.6533772,13.9324093 21.2206082,13.9046797 21.6128994,14.2097046 L21.7071068,14.2928932 C22.0675907,14.6533772 22.0953203,15.2206082 21.7902954,15.6128994 L21.7071068,15.7071068 L11.7071068,25.7071068 C11.6717127,25.7425008 11.6343256,25.774687 11.5953066,25.8036654 L11.4840621,25.8753288 L11.4840621,25.8753288 L11.371336,25.9287745 L11.371336,25.9287745 L11.265993,25.9641549 L11.265993,25.9641549 L11.1174742,25.9931658 L11.1174742,25.9931658 L11,26 L11,26 L10.9247615,25.9972121 L10.9247615,25.9972121 L10.7992742,25.9797599 L10.7992742,25.9797599 L10.6878575,25.9502619 L10.6878575,25.9502619 L10.5767785,25.9063266 L10.5767785,25.9063266 L10.4792912,25.8540045 L10.4792912,25.8540045 L10.3871006,25.7902954 L10.3871006,25.7902954 L10.2928932,25.7071068 L10.2928932,25.7071068 L0.292893219,15.7071068 C-0.0976310729,15.3165825 -0.0976310729,14.6834175 0.292893219,14.2928932 C0.65337718,13.9324093 1.22060824,13.9046797 1.61289944,14.2097046 L1.70710678,14.2928932 L10,22.584 L10,1 C10,0.44771525 10.4477153,0 11,0 Z" />
+                        </g>
+                    </svg></button>
+            </div>
+            <div id="feedback" style="display: none;">
+                <button onclick="newProblem(false)"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" height="40"
+                        viewBox="0 0 30 30">
                         <path
                             d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z">
                         </path>
                     </svg></button>
-                <button onclick="event.stopPropagation();newProblem(true)"><svg xmlns="http://www.w3.org/2000/svg"
-                        x="0px" y="0px" width="50" height="50" viewBox="0 0 50 50" color="white"
-                        style="stroke: white;fill: white;">
+                <button onclick="newProblem(true)"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" height="50"
+                        viewBox="0 0 50 50" color="white" style="stroke: white;fill: white;">
                         <path
                             d="M 41.9375 8.625 C 41.273438 8.648438 40.664063 9 40.3125 9.5625 L 21.5 38.34375 L 9.3125 27.8125 C 8.789063 27.269531 8.003906 27.066406 7.28125 27.292969 C 6.5625 27.515625 6.027344 28.125 5.902344 28.867188 C 5.777344 29.613281 6.078125 30.363281 6.6875 30.8125 L 20.625 42.875 C 21.0625 43.246094 21.640625 43.410156 22.207031 43.328125 C 22.777344 43.242188 23.28125 42.917969 23.59375 42.4375 L 43.6875 11.75 C 44.117188 11.121094 44.152344 10.308594 43.78125 9.644531 C 43.410156 8.984375 42.695313 8.589844 41.9375 8.625 Z">
                         </path>
