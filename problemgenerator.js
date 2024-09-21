@@ -1,4 +1,4 @@
-import { nonZero, randVariableTerm, randVariable, randInclusive } from "./randutils.js";
+import { nonZero, randVariableTerm, randVariable, randInclusive, sign } from "./randutils.js";
 
 class Term {
     constructor(factor, variables) {
@@ -20,6 +20,12 @@ class Term {
         if (b == 0)
             return a;
         return Term.gcd(b, a % b);
+    }
+
+    renderAsFactor(firstFactor = false) {
+        if (this.factor < 0 && !firstFactor)
+            return `(${this.render()})`;
+        return this.render();
     }
 
     render(asOperand = false) {
@@ -135,6 +141,21 @@ class TermSum {
         return result
     }
 
+    subtract(termSum) {
+        const result = new TermSum(this.terms);
+        for (let term of termSum.terms) {
+            result.push(new Term(-term.factor, term.variables));
+        }
+        return result
+    }
+
+    renderAsFactor(firstFactor = false) {
+        if (this.terms.length == 1) {
+            return this.terms[0].renderAsFactor(firstFactor);
+        }
+        return `(${this.render()})`;
+    }
+
     render() {
         let asOperand = false;
         let result = '';
@@ -214,6 +235,14 @@ class TermSum {
         }
         return result;
     }
+
+    multiplyTerm(term) {
+        const result = new TermSum();
+        for (let term1 of this.terms) {
+            result.push(term1.multiply(term));
+        }
+        return result;
+    }
 }
 
 class SimpleFraction {
@@ -236,8 +265,8 @@ class SimpleFraction {
         return `${this.sign}(${this.numerator.renderFactoredOut()}) / (${this.denominator.render()})`;
     }
 
-    simplifyNumerator() {
-        return new SimpleFraction(this.numerator.simplify(), this.denominator, this.sign);
+    simplifyNumerator(steps = []) {
+        return new SimpleFraction(this.numerator.simplify(steps), this.denominator, this.sign);
     }
 
     canReduce() {
@@ -253,10 +282,10 @@ class SimpleFraction {
             steps.push(`${this.render()} = `)
             steps.push(`${this.renderFactoredOut()} = `)
         }
-        
+
         const num = this.numerator.divide(commonterm);
         const den = this.denominator.divide(commonterm);
-        
+
         let sign = ''
         if (num.terms.length == 1) {
             sign = num.terms[0].factor * den.factor < 0 ? '-' : '';
@@ -395,15 +424,56 @@ export function generateAddFractionSimple() {
     let fraction1 = new SimpleFraction(numerator1, denominator);
     let fraction2 = new SimpleFraction(numerator2, denominator);
 
-    
-    result.problem = `${fraction1.render()} + ${fraction2.render()} = `;
-    
-    let sum = new SimpleFraction(numerator1.add(numerator2), denominator);
+    result.problem = `${fraction1.render()} ${sign(0)} ${fraction2.render()} = `;
+    let sum =
+        sign(0) === '+'
+            ? new SimpleFraction(numerator1.add(numerator2), denominator)
+            : new SimpleFraction(numerator1.subtract(numerator2), denominator);
 
     if (sum.numerator.canSimplify()) {
         result.steps.push(`${sum.render()} = `)
         sum = sum.simplifyNumerator();
     }
+
+    sum = sum.reduce(result.steps);
+
+    result.solution = `${sum.render()}`;
+
+    return result;
+}
+
+export function generateAddFraction() {
+    const result = {
+        prompt: `Add Fraction (2)`,
+        steps: [],
+    };
+
+    let fraction1 = new SimpleFraction(
+        TermSum.generate(randInclusive(1, 2), Term.generateSimple, true),
+        Term.generateSimple());
+    let fraction2 = new SimpleFraction(
+        TermSum.generate(randInclusive(1, 2), Term.generateSimple, true),
+        Term.generateSimple());
+
+    result.problem = `${fraction1.render()} ${sign(0)} ${fraction2.render()} = `;
+
+    result.steps.push(
+        `(${fraction1.numerator.renderAsFactor(true)} * ${fraction2.denominator.renderAsFactor()})` +
+        ` / (${fraction1.denominator.renderAsFactor(true)} * ${fraction2.denominator.renderAsFactor()})` +
+        ` ${sign(0)}` +
+        ` (${fraction2.numerator.renderAsFactor(true)} * ${fraction1.denominator.renderAsFactor()})` +
+        ` / (${fraction1.denominator.renderAsFactor(true)} * ${fraction2.denominator.renderAsFactor()}) =`);
+
+    let denominator = fraction1.denominator.multiply(fraction2.denominator);
+    let numerator1 = fraction1.numerator.multiplyTerm(fraction2.denominator);
+    let numerator2 = fraction2.numerator.multiplyTerm(fraction1.denominator);
+    fraction1 = new SimpleFraction(numerator1, denominator).simplifyNumerator(result.steps);
+    fraction2 = new SimpleFraction(numerator2, denominator).simplifyNumerator(result.steps);
+    result.steps.push(`${fraction1.render()} ${sign(0)} ${fraction2.render()} = `);
+
+    let sum = sign(0) === '+'
+        ? new SimpleFraction(fraction1.numerator.add(fraction2.numerator), denominator).simplifyNumerator(result.steps)
+        : new SimpleFraction(fraction1.numerator.subtract(fraction2.numerator), denominator).simplifyNumerator(result.steps);
 
     sum = sum.reduce(result.steps);
 

@@ -52,6 +52,7 @@
             generateExpandFactoredTermSum,
             generateExpandTermSumProduct,
             generateAddFractionSimple,
+            generateAddFraction,
         } from './problemgenerator.js';
 
         let state = -1;
@@ -83,7 +84,8 @@
                 // generateReduceFractionSimpleDenominator,
                 // generateExpandFactoredTermSum,
                 // generateExpandTermSumProduct,
-                generateAddFractionSimple,
+                // generateAddFractionSimple,
+                generateAddFraction,
             ]
 
             let { prompt, problem, solution, steps } = generators[rand(generators.length)]();
