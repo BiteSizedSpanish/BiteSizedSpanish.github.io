@@ -10,13 +10,14 @@
                 ready: () => {
                     MathJax.startup.defaultReady();
                     MathJax.startup.promise.then(() => {
-                        window.onBodyClicked();
+                        window.init();
                     });
                 },
             }
         };
     </script>
     <script id='MathJax-script' async src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/startup.js'></script>
+    <script src=" https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js "></script>
     <script src='problemgenerator.js'></script>
 
     <style>
@@ -37,14 +38,35 @@
             padding: 1rem;
         }
 
-        #solution {
-            border: 1px solid white;
-        }
-
         textarea {
             background-color: black;
             color: white;
             border: 1px solid white;
+        }
+
+        #stats {
+            padding: 1rem;
+            font-size: 1rem;
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-family: monospace;
+            text-align: start;
+        }
+
+        #feedback>div {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        button {
+            background-color: black;
+            color: white;
+            padding: 1rem;
+            font-size: 2rem;
+            border: 1px solid white;
+            width: 50%;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -65,9 +87,10 @@
             generateAddFraction,
             generateSeparateFraction,
         } from './problemgenerator.js';
+        import { getStats, recordPlayed } from './stats.js';
 
-        let state = -1;
-        let hideProblem = true;
+        let step = 0;
+        let hideProblemWhenDone = true;
 
         function filterDuplicateSteps(steps, problem, solution) {
             problem = problem.replaceAll('=', '').trim().replaceAll(' ', '');
@@ -108,11 +131,11 @@
             document.getElementById('problem').innerHTML = '`' + problem + '`';
             if (problem.includes('?')) {
                 document.getElementById('solution').innerHTML = '`' + problem.replace('?', solution) + '`';
-                hideProblem = true;
+                hideProblemWhenDone = true;
             }
             else {
                 document.getElementById('solution').innerHTML = '`' + solution + '`';
-                hideProblem = false;
+                hideProblemWhenDone = false;
             }
 
             if (steps) {
@@ -125,31 +148,61 @@
             await MathJax.typesetPromise();
         }
 
-        function onBodyClicked() {
-            state = (state + 1) % (2 + document.getElementById('steps').childElementCount);
-            if (state == 0) {
-                document.getElementById('problem').style.display = 'block';
-                document.getElementById('steps').innerHTML = '';
-                document.getElementById('notes').value = '';
-                document.getElementById('solution').style.display = 'none';
-                renderRandom();
-            } else if (document.getElementById('steps').childElementCount >= state) {
-                document.getElementById('steps').children[state - 1].style.display = 'block';
-            } else {
-                if (hideProblem)
+        window.newProblem = (wasCorrect) => {
+            step = 0;
+            document.getElementById('problem').style.display = 'block';
+            document.getElementById('steps').innerHTML = '';
+            document.getElementById('notes').value = '';
+            document.getElementById('solution').style.display = 'none';
+            document.getElementById('feedback').style.display = 'none';
+            recordPlayed(wasCorrect);
+            refreshStats();
+            renderRandom();
+        }
+
+        window.onBodyClicked = () => {
+            if (step > document.getElementById('steps').childElementCount)
+                return;
+            step++;
+
+            if (step > document.getElementById('steps').childElementCount) {
+                if (hideProblemWhenDone)
                     document.getElementById('problem').style.display = 'none';
                 document.getElementById('solution').style.display = 'block';
+                document.getElementById('feedback').style.display = 'block';
+            } else {
+                document.getElementById('steps').children[step - 1].style.display = 'block';
             }
         }
-        window.onBodyClicked = onBodyClicked;
+        window.init = () => {
+            refreshStats();
+            renderRandom();
+        }
+
+        function refreshStats() {
+            const stats = getStats();
+            document.getElementById('stats').innerHTML = `
+                Played: ${stats.totalSolvedCorrect} / ${stats.totalSolved}<br>
+                Today: ${stats.solvedTodayCorrect} / ${stats.solvedToday}`;
+        }
+
     </script>
 
     <div id="prompt"></div>
     <div id="problem" style="display: block;"> </div>
     <div id="steps" style="display: block;"> </div>
     <div id="solution" style="display: none;"> </div>
+    <div id="feedback" style="display: none;">
+        <div>
+            <button onclick="event.stopPropagation();newProblem(false)">X</button>
+            <button onclick="event.stopPropagation();newProblem(true)">✔</button>
+        </div>
+    </div>
 
-    <textarea id="notes" style="width: 100%; height: 10rem; font-size: 1rem; margin-top: 1rem;" placeholder="Notes" onclick="event.stopPropagation()"></textarea>
+    <textarea id="notes" style="width: 100%; height: 10rem; font-size: 1rem; margin-top: 1rem;" placeholder="Notes"
+        onclick="event.stopPropagation()"></textarea>
+
+    <div id="stats"></div>
 
 </body>
 
