@@ -255,8 +255,12 @@ class SimpleFraction {
     render() {
         if (this.numerator.terms.length == 0)
             return '0';
-        if (this.denominator.factor == 1 && this.denominator.variables.length == 0)
-            return this.sign + this.numerator.render();
+        if (this.denominator.factor == 1 && this.denominator.variables.length == 0) {
+            if (this.numerator.terms.length == 1 && this.numerator.terms[0].factor > 0)
+                return this.sign + this.numerator.render();
+            else
+                return `${this.sign}(${this.numerator.render()})`;
+        }
 
         return `${this.sign}(${this.numerator.render()}) / (${this.denominator.render()})`;
     }
@@ -279,24 +283,29 @@ class SimpleFraction {
     }
 
     reduce(steps = []) {
+        let num = new TermSum(this.numerator.terms.map(t => new Term(t.factor, t.variables)));
+        let den = new Term(this.denominator.factor, this.denominator.variables);
+
+        let sign = this.sign;
+        if (num.terms.length == 1) {
+            if (sign == '-')
+                sign = num.terms[0].factor * den.factor < 0 ? '+' : '-';
+            else
+                sign = num.terms[0].factor * den.factor < 0 ? '-' : this.sign;
+            num.terms[0].factor = Math.abs(num.terms[0].factor);
+            den.factor = Math.abs(den.factor);
+        }
+
         if (!this.canReduce()) {
-            return this;
+            return new SimpleFraction(num, den, sign);
         }
         const commonterm = this.numerator.gcd().gcd(this.denominator);
         if (!commonterm.isOne()) {
             steps.push(`${this.render()} = `)
             steps.push(`${this.renderFactoredOut()} = `)
         }
-
-        const num = this.numerator.divide(commonterm);
-        const den = this.denominator.divide(commonterm);
-
-        let sign = ''
-        if (num.terms.length == 1) {
-            sign = num.terms[0].factor * den.factor < 0 ? '-' : '';
-            num.terms[0].factor = Math.abs(num.terms[0].factor);
-            den.factor = Math.abs(den.factor);
-        }
+        num = num.divide(commonterm);
+        den = den.divide(commonterm);
 
         const result = new SimpleFraction(num, den, sign);
 
@@ -484,6 +493,29 @@ export function generateAddFraction() {
 
     result.solution = `${sum.render()}`;
 
+    return result;
+}
+
+export function generateSeparateFraction() {
+    const result = {
+        prompt: `Separate Fraction`,
+        steps: [],
+    };
+
+    let fraction = new SimpleFraction(
+        TermSum.generate(randInclusive(2, 4), Term.generate, true),
+        Term.generateSimple());
+
+    result.problem = `${fraction.render()} = `;
+
+    let separatedFractions = fraction.numerator.terms.map(term => {
+        return new SimpleFraction(new TermSum([new Term(Math.abs(term.factor), term.variables)]), fraction.denominator, term.factor < 0 ? '-' : '+');
+    })
+    if (separatedFractions[0].sign == '+')
+        separatedFractions[0].sign = '';
+
+    result.steps.push(separatedFractions.map(f => f.render()).join(' ') + ' = ');
+    result.solution = separatedFractions.map(f => f.reduce().render()).join(' ');
     return result;
 }
 
