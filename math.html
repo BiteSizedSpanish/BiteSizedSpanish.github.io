@@ -76,7 +76,13 @@
 
         #actions>div {
             display: flex;
+            justify-content: center;
+            gap: 1em;
             width: 100%;
+        }
+
+        #actions button {
+            max-width: 500px;            
         }
 
         button {
@@ -102,6 +108,18 @@
 
         * {
             box-sizing: border-box;
+        }
+
+        #next > button {
+            background-color: rgb(43, 43, 43);
+        }
+        
+        #feedback > button:nth-child(1) {
+            background-color: rgba(255, 0, 0, 0.4);
+        }
+
+        #feedback > button:nth-child(2) {
+            background-color: rgba(0, 255, 0, 0.4);
         }
     </style>
 </head>
