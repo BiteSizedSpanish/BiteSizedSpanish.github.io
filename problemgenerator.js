@@ -286,3 +286,55 @@ export function generateExponentExponentiation() {
     return result;
 }
 
+export function generateMultiplicationExponentiation() {
+    const result = {
+        prompt: `Write without brackets`,
+        steps: [],
+    };
+
+    const term1 = new Term(1, randVariable(0));
+    const term2 = new Term(1, randVariable(1));
+    const exponent = Term.generateSingleValue();
+
+    result.problem = `(${term1.renderAsFactor(true)} * ${term2.renderAsFactor()})^(${exponent.render()})`;
+
+    if (exponent.isOne()) {
+        result.solution = `${term1.renderAsFactor(true)} * ${term2.renderAsFactor()}`;
+        return result;
+    }
+
+    result.solution = `${term1.renderAsBase()}^(${exponent.render()}) * ${term2.renderAsBase()}^(${exponent.render()})`;
+    return result;
+}
+
+export function generateBinomial() {
+    const result = {
+        prompt: `Expand`,
+        steps: [],
+    };
+
+    const t1 = new Term(nonZero(-3, 3), randVariableTerm(1, 3));
+    const t2 = new Term(nonZero(-3, 3), randVariableTerm(1, 3));
+
+    const terms = new TermSum([t1, t2]);
+    result.problem = `(${terms.render()})^(2)`;
+
+    if (terms.canSimplify()) {
+        if (terms.simplify().isZero()) {
+            result.solution = `0`;
+            return result;
+        }
+        result.steps.push(`${terms.simplify().terms[0].renderAsBase()}^(2)`);
+        result.solution = `${new Power(terms.simplify().terms[0], new Term(2, '')).simplify().render()}`;
+        return result;
+    }
+
+    const sum = new TermSum([
+        t1.multiply(t1),
+        t1.multiply(t2).multiply(new Term(2, '')),
+        t2.multiply(t2),
+    ]);
+
+    result.solution = `${sum.render()}`;
+    return result;
+}
