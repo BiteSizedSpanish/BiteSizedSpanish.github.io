@@ -110,19 +110,7 @@
 
     <script type="module">
         import { initRandom, rand } from './randutils.js';
-        import {
-            generateCombineSum,
-            generateCombineSumN,
-            generateFactorOut,
-            generateReduceSimpleFraction,
-            generateReduceFractionSimpleDenominator,
-            generateExpandFactoredTermSum,
-            generateExpandTermSumProduct,
-            generateAddFractionSimple,
-            generateAddFraction,
-            generateSeparateFraction,
-            generateMultiplyFraction,
-        } from './problemgenerator.js';
+        import * as generators from './problemgenerator.js';
         import { getStats, recordPlayed } from './stats.js';
 
         let step = 0;
@@ -146,21 +134,8 @@
         async function renderRandom() {
             initRandom();
 
-            const generators = [
-                generateCombineSum,
-                generateCombineSumN,
-                generateFactorOut,
-                generateReduceSimpleFraction,
-                generateReduceFractionSimpleDenominator,
-                generateExpandFactoredTermSum,
-                generateExpandTermSumProduct,
-                generateAddFractionSimple,
-                generateAddFraction,
-                generateSeparateFraction,
-                generateMultiplyFraction,
-            ]
-
-            let { prompt, problem, solution, steps } = generators[rand(generators.length)]();
+            console.log(generators);
+            let { prompt, problem, solution, steps } = Object.values(generators)[rand(Object.values(generators).length)]();
             if (solution === '')
                 solution = '0';
 
