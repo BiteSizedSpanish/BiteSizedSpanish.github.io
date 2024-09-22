@@ -154,12 +154,30 @@ export function generateAddFraction() {
 
     result.problem = `${fraction1.render()} ${sign(0)} ${fraction2.render()}`;
 
-    result.steps.push(
-        `(${fraction1.numerator.renderAsFactor(true)} * ${fraction2.denominator.renderAsFactor()})` +
-        ` / (${fraction1.denominator.renderAsFactor(true)} * ${fraction2.denominator.renderAsFactor()})` +
-        ` ${sign(0)}` +
-        ` (${fraction2.numerator.renderAsFactor(true)} * ${fraction1.denominator.renderAsFactor()})` +
-        ` / (${fraction1.denominator.renderAsFactor(true)} * ${fraction2.denominator.renderAsFactor()})`);
+    const expansion1 = fraction1.denominator.lcm(fraction2.denominator).divide(fraction1.denominator);
+    const expansion2 = fraction1.denominator.lcm(fraction2.denominator).divide(fraction2.denominator);
+
+    if (expansion1.isOne())
+        result.steps.push(
+            `(${fraction1.numerator.renderAsFactor(true)})` +
+            ` / (${fraction1.denominator.renderAsFactor(true)})` +
+            ` ${sign(0)}` +
+            ` (${fraction2.numerator.renderAsFactor(true)} * ${expansion2.renderAsFactor()})` +
+            ` / (${fraction2.denominator.renderAsFactor(true)} * ${expansion2.renderAsFactor()})`);
+    else if (expansion2.isOne())
+        result.steps.push(
+            `(${fraction1.numerator.renderAsFactor(true)} * ${expansion1.renderAsFactor()})` +
+            ` / (${fraction1.denominator.renderAsFactor(true)} * ${expansion1.renderAsFactor()})` +
+            ` ${sign(0)}` +
+            ` (${fraction2.numerator.renderAsFactor(true)})` +
+            ` / (${fraction2.denominator.renderAsFactor(true)})`);
+    else
+        result.steps.push(
+            `(${fraction1.numerator.renderAsFactor(true)} * ${expansion1.renderAsFactor()})` +
+            ` / (${fraction1.denominator.renderAsFactor(true)} * ${expansion1.renderAsFactor()})` +
+            ` ${sign(0)}` +
+            ` (${fraction2.numerator.renderAsFactor(true)} * ${expansion2.renderAsFactor()})` +
+            ` / (${fraction2.denominator.renderAsFactor(true)} * ${expansion2.renderAsFactor()})`);
 
     let denominator = fraction1.denominator.multiply(fraction2.denominator);
     let numerator1 = fraction1.numerator.multiplyTerm(fraction2.denominator);

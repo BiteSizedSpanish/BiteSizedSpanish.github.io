@@ -104,6 +104,14 @@ export class Term {
         return result;
     }
 
+    abs() {
+        return new Term(Math.abs(this.factor), this.variables);
+    }
+
+    lcm(term) {
+        return this.multiply(term).abs().divide(this.gcd(term));
+    }
+
     gcd(term) {
         const commonFactor = Term.gcd(Math.abs(this.factor), Math.abs(term.factor));
         let commonVariables = '';
