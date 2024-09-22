@@ -179,9 +179,9 @@ export function generateAddFraction() {
             ` (${fraction2.numerator.renderAsFactor(true)} * ${expansion2.renderAsFactor()})` +
             ` / (${fraction2.denominator.renderAsFactor(true)} * ${expansion2.renderAsFactor()})`);
 
-    let denominator = fraction1.denominator.multiply(fraction2.denominator);
-    let numerator1 = fraction1.numerator.multiplyTerm(fraction2.denominator);
-    let numerator2 = fraction2.numerator.multiplyTerm(fraction1.denominator);
+    let denominator = fraction1.denominator.multiply(expansion1);
+    let numerator1 = fraction1.numerator.multiplyTerm(expansion1);
+    let numerator2 = fraction2.numerator.multiplyTerm(expansion2);  
     fraction1 = new SimpleFraction(numerator1, denominator).simplifyNumerator(result.steps);
     fraction2 = new SimpleFraction(numerator2, denominator).simplifyNumerator(result.steps);
     result.steps.push(`${fraction1.render()} ${sign(0)} ${fraction2.render()}`);
