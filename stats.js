@@ -23,4 +23,8 @@ export function recordPlayed(wasCorrect) {
         Cookies.set('solvedTodayCorrect', parseInt(Cookies.get('solvedTodayCorrect') ?? 0) + 1, { expires: 1 });
         Cookies.set('totalSolvedCorrect', parseInt(Cookies.get('totalSolvedCorrect') ?? 0) + 1, { expires: 10000 });    
     }
+
+    if (parseInt(Cookies.get('solvedTodayCorrect') ?? 0) % 10 == 0) {
+        window.location = "./cat.html"
+    }
 }
