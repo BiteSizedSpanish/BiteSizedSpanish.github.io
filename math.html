@@ -82,7 +82,7 @@
         }
 
         #actions button {
-            max-width: 500px;            
+            max-width: 500px;
         }
 
         button {
@@ -110,18 +110,22 @@
             box-sizing: border-box;
         }
 
-        #next > button {
+        #next>button {
             background-color: rgb(43, 43, 43);
         }
         
-        #feedback > button:nth-child(1) {
+        #feedback>button:nth-child(1) {
             background-color: rgba(255, 0, 0, 0.4);
         }
 
-        #feedback > button:nth-child(2) {
+        #feedback>button:nth-child(2) {
             background-color: rgba(0, 255, 0, 0.4);
         }
-    </style>
+
+        #next>button:nth-child(1) {
+            background-color: rgba(0, 255, 0, 0.2);
+        }
+</style>
 </head>
 
 <body>
@@ -200,6 +204,12 @@
                 document.getElementById('steps').children[step - 1].style.display = 'block';
             }
         }
+
+        window.showAllSteps = () => {
+            while (step <= document.getElementById('steps').childElementCount)
+                showNextStep();
+        }
+
         window.initTrainer = () => {
             refreshStats();
             renderRandom();
@@ -222,6 +232,17 @@
         <div id="solution" style="display: none;"> </div>
         <div id="actions">
             <div id="next">
+                <button onclick="showAllSteps()"><svg height="50" viewBox="0 0 22 32.5"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <path
+                                d="m 11,0 c 0.512836,0 0.935507,0.38604019 0.993272,0.88337888 L 12,1 v 21.584 l 8.292893,-8.291107 c 0.360484,-0.360484 0.927715,-0.388213 1.320006,-0.08319 l 0.09421,0.08319 c 0.360484,0.360484 0.388213,0.927715 0.08319,1.320006 l -0.08319,0.09421 -10,10 c -0.03539,0.03539 -0.07278,0.06758 -0.1118,0.09656 l -0.111245,0.07166 v 0 l -0.112726,0.05345 v 0 l -0.105343,0.03538 v 0 l -0.148519,0.02901 v 0 L 11,26 v 0 l -0.07524,-0.0028 v 0 l -0.125488,-0.01745 v 0 l -0.111416,-0.0295 v 0 l -0.111079,-0.04393 v 0 L 10.479287,25.854 v 0 l -0.09219,-0.06371 v 0 l -0.09421,-0.08319 v 0 l -9.99999978,-10 c -0.39052429,-0.390524 -0.39052429,-1.02369 0,-1.414214 0.36048396,-0.360484 0.92771498,-0.388213 1.32000618,-0.08319 l 0.094207,0.08319 L 10,22.584 V 1 c 0,-0.55228475 0.447715,-1 1,-1 z" />
+                        </g>
+                        <g transform="translate(0,-7.8100487)">
+                            <path
+                                d="m 11,10.588772 c 0.512836,0 0.935507,0.386041 0.993272,0.883379 L 12,11.588772 V 22.584 l 8.292893,-8.291107 c 0.360484,-0.360484 0.927715,-0.388213 1.320006,-0.08319 l 0.09421,0.08319 c 0.360484,0.360484 0.388213,0.927715 0.08319,1.320006 l -0.08319,0.09421 -10,10 c -0.03539,0.03539 -0.07278,0.06758 -0.1118,0.09656 l -0.111245,0.07166 v 0 l -0.112726,0.05345 v 0 l -0.105343,0.03538 v 0 l -0.148519,0.02901 v 0 L 11,26 v 0 l -0.07524,-0.0028 v 0 l -0.125488,-0.01745 v 0 l -0.111416,-0.0295 v 0 l -0.111079,-0.04393 v 0 L 10.479287,25.854 v 0 l -0.09219,-0.06371 v 0 l -0.09421,-0.08319 v 0 l -9.99999978,-10 c -0.39052429,-0.390524 -0.39052429,-1.02369 0,-1.414214 0.36048396,-0.360484 0.92771498,-0.388213 1.32000618,-0.08319 l 0.094207,0.08319 L 10,22.584 V 11.588772 c 0,-0.552284 0.447715,-1 1,-1 z" />
+                        </g>
+                    </svg></button>
                 <button onclick="showNextStep()"><svg xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink" height="50" viewBox="0 0 22 32.5">
                         <g>
