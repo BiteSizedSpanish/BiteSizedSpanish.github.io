@@ -7,7 +7,8 @@ export function generateCombineSum() {
     return {
         prompt: `Simplify Sum (1)`,
         problem: `${a.render()} ${b.render(true)}`,
-        solution: `${a.add(b).render()}`
+        solution: `${a.add(b).render()}`,
+        explanation: `2x + 3x = (2+3)x = 5x`
     };
 }
 
@@ -18,6 +19,7 @@ export function generateCombineSumN() {
         prompt: `Simplify Sum (2)`,
         problem: terms.render(),
         solution: terms.simplify().render(),
+        explanation: `2x + 3x + 5y - 2y = (2+3)x + (5-2)y = 5x + 3y`
     };
 }
 
@@ -25,6 +27,7 @@ export function generateFactorOut() {
     const result = {
         prompt: `Factor out the common factor`,
         steps: [],
+        explanation: `ax ± bx = (a±b)x`,
     };
 
     let commonTerm = Term.generate();
@@ -48,7 +51,8 @@ export function generateReduceSimpleFraction() {
     return {
         prompt: `Simplify (1)`,
         problem: `${fraction.render()}`,
-        solution: `${fraction.reduce().render()}`
+        solution: `${fraction.reduce().render()}`,
+        explanation: `(ax) / (bx) = a / b`
     };
 }
 
@@ -57,6 +61,7 @@ export function generateReduceFractionSimpleDenominator() {
     const result = {
         prompt: `Simplify (2)`,
         steps: [],
+        explanation: `(ax) / (bx) = a / b`,
     };
 
     let commonTerm = Term.generate();
@@ -88,7 +93,8 @@ export function generateExpandFactoredTermSum() {
     return {
         prompt: `Expand (1)`,
         problem: `${sum.renderFactoredOut()}`,
-        solution: `${sum.render()}`
+        solution: `${sum.render()}`,
+        explanation: `(a±b)x = ax ± bx`
     };
 }
 
@@ -96,6 +102,7 @@ export function generateExpandTermSumProduct() {
     const result = {
         prompt: `Expand (2)`,
         steps: [],
+        explanation: `(a+b)(c+d) = ac + ad + bc + bd`,
     }
 
     let sum1 = TermSum.generate(2, Term.generateSimple, true);
@@ -112,6 +119,7 @@ export function generateAddFractionCommonDenominator() {
     const result = {
         prompt: `Add Fraction (1)`,
         steps: [],
+        explanation: `a / x ± b / x = (a±b) / x`,
     };
 
     let denominator = Term.generate();
@@ -143,6 +151,7 @@ export function generateAddFraction() {
     const result = {
         prompt: `Add Fraction (2)`,
         steps: [],
+        explanation: `a / x + b / y = (ay + bx) / (xy)`,
     };
 
     let fraction1 = new SimpleFraction(
@@ -201,6 +210,7 @@ export function generateSeparateFraction() {
     const result = {
         prompt: `Separate Fraction`,
         steps: [],
+        explanation: `(a ± b) / x = a / x ± b / x`,
     };
 
     let fraction = new SimpleFraction(
@@ -224,6 +234,7 @@ export function generateMultiplyFraction() {
     const result = {
         prompt: `Multiply Fraction (2)`,
         steps: [],
+        explanation: `a / x * b / y = (ab) / (xy)`,
     }
 
     let fraction1 = new SimpleFraction(
@@ -262,6 +273,7 @@ export function generateExponentAddition() {
     const result = {
         prompt: `Simplify`,
         steps: [],
+        explanation: '`different exponents cannot be added together`',
     };
 
     const term1 = new Term(nonZero(-5, 5), randVariable(0).repeat(randInclusive(2, 4)));
@@ -277,6 +289,7 @@ export function generateExponentMultiplication() {
     const result = {
         prompt: `Simplify`,
         steps: [],
+        explanation: `a^x * a^y = a^(x+y)`,
     };
 
     const term1 = new Term(nonZero(-3, 3), randVariable(0).repeat(randInclusive(2, 4)));
@@ -291,6 +304,7 @@ export function generateExponentExponentiation() {
     const result = {
         prompt: `Simplify`,
         steps: [],
+        explanation: `(a^x)^y = a^(x*y)`,
     };
 
     const term1 = Term.generateSingleValue();
@@ -308,6 +322,7 @@ export function generateMultiplicationExponentiation() {
     const result = {
         prompt: `Write without brackets`,
         steps: [],
+        explanation: `(a*b)^x = a^x * b^x`,
     };
 
     const term1 = new Term(1, randVariable(0));
@@ -329,6 +344,7 @@ export function generateBinomial() {
     const result = {
         prompt: `Expand`,
         steps: [],
+        explanation: `(a±b)^2 = a^2 ± 2ab + b^2`,
     };
 
     const t1 = new Term(nonZero(-3, 3), randVariableTerm(1, 3));

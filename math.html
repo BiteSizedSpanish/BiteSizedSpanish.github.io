@@ -27,7 +27,7 @@
     <script src='problemgenerator.js'></script>
 
     <style>
-        body {
+        body, dialog {
             text-align: center;
             padding: 2rem;
             box-sizing: border-box;
@@ -113,7 +113,7 @@
         #next>button {
             background-color: rgb(43, 43, 43);
         }
-        
+
         #feedback>button:nth-child(1) {
             background-color: rgba(255, 0, 0, 0.4);
         }
@@ -125,7 +125,11 @@
         #next>button:nth-child(1) {
             background-color: rgba(0, 255, 0, 0.2);
         }
-</style>
+
+        dialog::backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+    </style>
 </head>
 
 <body>
@@ -136,7 +140,6 @@
         import { getStats, recordPlayed } from './stats.js';
 
         let step = 0;
-        let hideProblemWhenDone = true;
 
         function filterDuplicateSteps(steps, problem, solution) {
             problem = problem.replaceAll('=', '').trim().replaceAll(' ', '');
@@ -157,14 +160,14 @@
             initRandom();
 
             console.log(generators);
-            let { prompt, problem, solution, steps } = Object.values(generators)[rand(Object.values(generators).length)]();
+            let { prompt, problem, solution, steps, explanation } = Object.values(generators)[rand(Object.values(generators).length)]();
             if (solution === '')
                 solution = '0';
 
             document.getElementById('prompt').innerHTML = prompt;
             document.getElementById('problem').innerHTML = '`' + problem + ' = `';
             document.getElementById('solution').innerHTML = '`' + solution + '`';
-            hideProblemWhenDone = false;
+            document.getElementById('explanation').innerHTML = '`' + explanation + '`';
 
             if (steps) {
                 steps = filterDuplicateSteps(steps, problem, solution);
@@ -178,7 +181,6 @@
 
         window.newProblem = (wasCorrect) => {
             step = 0;
-            document.getElementById('problem').style.display = 'block';
             document.getElementById('steps').innerHTML = '';
             document.getElementById('notes').value = '';
             document.getElementById('solution').style.display = 'none';
@@ -195,8 +197,6 @@
             step++;
 
             if (step > document.getElementById('steps').childElementCount) {
-                if (hideProblemWhenDone)
-                    document.getElementById('problem').style.display = 'none';
                 document.getElementById('solution').style.display = 'block';
                 document.getElementById('next').style.display = 'none';
                 document.getElementById('feedback').style.display = 'flex';
@@ -215,6 +215,10 @@
             renderRandom();
         }
 
+        window.showExplanation = () => {
+
+        }
+
         function refreshStats() {
             const stats = getStats();
             document.getElementById('stats').innerHTML = `
@@ -227,7 +231,12 @@
     <div id="content">
         <div id="stats"></div>
         <div id="prompt"></div>
-        <div id="problem" style="display: block;"> </div>
+        <div style="display: flex; justify-content: center;">
+            <div id="problem"> </div>
+            <div style="align-content: center; cursor: pointer;" onclick="document.getElementById('explanation').showModal()">&nbsp;&nbsp;&nbsp;`(?)`</div>
+            <dialog id="explanation" onclick="document.getElementById('explanation').close()" style="cursor: pointer;">
+            </dialog>
+        </div>
         <div id="steps"> </div>
         <div id="solution" style="display: none;"> </div>
         <div id="actions">
