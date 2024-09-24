@@ -44,12 +44,6 @@ export function generateBinomial2() {
     const terms = TermSum.generate(2, () => new Term(nonZero(-3, 3), randVariableTerm(1, 2)), true);
     const terms2 = new TermSum([terms.terms[0], terms.terms[1].multiply(new Term(-1, ''))]);
     result.problem = `${terms.renderAsFactor()}${terms2.renderAsFactor()}`;
-
-    const sum = new TermSum([
-        t1.multiply(t1),
-        t2.multiply(t2).multiplyTerm(new Term(-1, '')),
-    ]);
-
-    result.solution = `${sum.render()}`;
+    result.solution = `${terms.multiply(terms2).simplify().render()}`;
     return result;
 }

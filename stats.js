@@ -24,8 +24,7 @@ export function recordPlayed(wasCorrect) {
         Cookies.set('totalSolvedCorrect', parseInt(Cookies.get('totalSolvedCorrect') ?? 0) + 1, { sameSite: 'strict', expires: 10000 });    
     }
 
-    const todayCorrect = parseInt(Cookies.get('solvedTodayCorrect') ?? 0);
-    if (todayCorrect > 0 && todayCorrect % 10 == 0) {
+    if (wasCorrect && parseInt(Cookies.get('solvedTodayCorrect') ?? 0) % 10 == 0) {
         window.location = "./cat.html"
     }
 }

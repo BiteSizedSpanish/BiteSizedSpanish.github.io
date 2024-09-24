@@ -33,7 +33,7 @@ function sfc32(a, b, c, d) {
 export function randomStr(length, randomness) {
     let result = '';
     const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    
+
     // Loop to generate characters for the specified length
     for (let i = 0; i < length; i++) {
         const randomInd = Math.floor(randomness() * characters.length);
@@ -47,7 +47,7 @@ export function randomStr(length, randomness) {
 
 export function shuffledArray(len) {
     let array = [];
-    
+
     for (let i = 0; i < len; i++) {
         array.push(i);
     }
@@ -63,8 +63,7 @@ let rand = null;
 let shuffled = [];
 
 export function initRandom(p) {
-    if (!p)
-    {
+    if (!p) {
         const url = new URL(window.location.href);
         p = randomStr(8, Math.random);
         url.searchParams.set('p', p);
@@ -79,7 +78,7 @@ export function initRandom(p) {
         shuffled.push(shuffledArray(i));
     }
 }
-addEventListener("popstate", () => {window.location.reload();});
+addEventListener("popstate", () => { window.location.reload(); });
 
 export function pickRandomUnique(array, seed) {
     return array[shuffled[array.length][seed]];
