@@ -18,6 +18,7 @@
             box-sizing: border-box;
             background-color: black;
             color: white;
+            font-family: monospace;
         }
 
         #prompt {
@@ -30,7 +31,7 @@
 
         @media screen and (min-width: 600px) {
             #prompt {
-                font-size: 3rem;
+                font-size: 2rem;
             }
 
             mjx-container {
@@ -55,7 +56,6 @@
 
         #stats {
             font-size: 16px;
-            font-family: monospace;
             text-align: start;
         }
 
@@ -114,6 +114,10 @@
         dialog::backdrop {
             background-color: rgba(0, 0, 0, 0.5);
         }
+
+        #settings {
+            text-align: start;
+        }
     </style>
 
     <script>
@@ -135,7 +139,7 @@
     <script src=" https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js "></script>
     <script type="module">
         import { initRandom, randInt } from './randutils.js';
-        import * as generators from './problemgenerator.js';
+        import { generators, getSelectedCategories, setSelectedCategories, generatorConfig } from './generators/problemgenerators.js';
         import { getStats, recordPlayed } from './stats.js';
 
         let step = 0;
@@ -158,7 +162,7 @@
         async function renderRandom(seed) {
             initRandom(seed);
 
-            let { prompt, problem, solution, steps, explanation } = Object.values(generators)[randInt(Object.values(generators).length)]();
+            let { prompt, problem, solution, steps, explanation } = generators()[randInt(generators().length)]();
             if (solution === '')
                 solution = '0';
 
@@ -209,8 +213,15 @@
         }
 
         window.initTrainer = () => {
+            initSettings();
             refreshStats();
             renderRandom(new URLSearchParams(window.location.search).get('p'));
+        }
+
+        function initSettings() {
+            document.getElementById('settings').children[1].innerHTML = Object.keys(generatorConfig).map((c) =>
+                `<input type="checkbox" name="${c}" ${getSelectedCategories().includes(c) ? 'checked' : ''}>` +
+                `<label for="${c}">${generatorConfig[c].name}</label><br>`).join('');
         }
 
         function refreshStats() {
@@ -221,6 +232,9 @@
         }
 
         window.saveSettings = () => {
+            const selectedCategories = Array.from(document.getElementById('settings').children[1].children)
+                .filter((c) => c.tagName === 'INPUT' && c.checked).map((c) => c.name);
+            setSelectedCategories(selectedCategories.join(''));
             document.getElementById('settings').close();
         }
 
@@ -238,6 +252,7 @@
             </svg></div>
         <dialog id="settings">
             <h2>Settings</h2>
+            <div></div>
             <button onclick="saveSettings()">Save</button>
         </dialog>
         <div id="stats"></div>
