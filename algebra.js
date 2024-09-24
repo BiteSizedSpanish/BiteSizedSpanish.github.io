@@ -1,4 +1,4 @@
-import { nonZero, randVariableTerm, randVariable, randInclusive, sign } from "./randutils.js";
+import { nonZero, randVariableTerm, randVariable, randInclusive, sign, randInt } from "./randutils.js";
 
 export class Term {
     constructor(factor, variables) {
@@ -9,7 +9,7 @@ export class Term {
     static one = new Term(1, '');
 
     static generateSingleValue(positive = false) {
-        if (Math.random() < 0.3)
+        if (randInt(3) == 0)
             return new Term(positive ? nonZero(-3, 3) : nonZero(1, 3), '');
         else
             return new Term(1, randVariableTerm(1, 2));
