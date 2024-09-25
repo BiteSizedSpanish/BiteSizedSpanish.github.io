@@ -181,7 +181,7 @@
         <div id="actions">
             <div id="next" class="flex justify-center gap-4 w-full">
                 <button onclick="showAllSteps()"
-                    class="bg-[#00ff0033] p-2 border w-full cursor-pointer max-w-{500px} flex justify-center">
+                    class="bg-[#00ff0033] p-2 border w-full cursor-pointer max-w-[500px] flex justify-center">
                     <svg class="stroke-white fill-white w-5" height="50" viewBox="0 0 22 32.5"
                         xmlns="http://www.w3.org/2000/svg">
                         <g>
@@ -194,7 +194,7 @@
                         </g>
                     </svg></button>
                 <button onclick="showNextStep()"
-                    class="bg-white/10 p-2 border w-full cursor-pointer max-w-{500px} flex justify-center ">
+                    class="bg-white/10 p-2 border w-full cursor-pointer max-w-[500px] flex justify-center ">
                     <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink" height="50" viewBox="0 0 22 32.5">
                         <g>
@@ -203,9 +203,9 @@
                         </g>
                     </svg></button>
             </div>
-            <div id="feedback" class="justify-center gap-4 w-full hidden">
+            <div id="feedback" class="flex justify-center gap-4 w-full hidden">
                 <button onclick="newProblem(false)"
-                    class="bg-red-500/40 p-2 border w-full cursor-pointer max-w-{500px} flex justify-center">
+                    class="bg-red-500/40 p-2 border w-full cursor-pointer max-w-[500px] flex justify-center">
                     <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                         height="40" viewBox="0 0 30 30">
                         <path
@@ -213,7 +213,7 @@
                         </path>
                     </svg></button>
                 <button onclick="newProblem(true)"
-                    class="bg-green-500/40 p-2 border w-full cursor-pointer max-w-{500px} flex justify-center">
+                    class="bg-green-500/40 p-2 border w-full cursor-pointer max-w-[500px] flex justify-center">
                     <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                         height="50" viewBox="0 0 50 50" color="white">
                         <path
@@ -226,6 +226,12 @@
         <textarea id="notes" placeholder="Notes" onclick="event.stopPropagation()"
             class="bg-black w-full min-h-40 border text-base p-2"></textarea>
     </div>
+
+    <div class="w-full pt-12 pb-4"><div class="w-full h-[1px] bg-gray-500"></div></div>
+    <footer class="text-sm text-gray-500">
+        Created By Matthias Bergmann<br>
+        Want to report an issue or request a feature? <a href="https://github.com/BiteSizedMath/BiteSizedMath.github.io/issues" class="underline">Click Here</a> or <a href="mailto:bergmannmatthias1+bitesizedmath@gmail.com" class="underline">Send me an email</a>
+    </footer>
 
 
 </body>
