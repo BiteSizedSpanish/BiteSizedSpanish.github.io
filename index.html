@@ -10,113 +10,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bite Sized Math</title>
 
+    <link href="./output.css" rel="stylesheet">
     <style>
-        body,
-        dialog {
-            text-align: center;
-            padding: 2rem;
-            box-sizing: border-box;
-            background-color: black;
-            color: white;
-            font-family: monospace;
-        }
-
-        #prompt {
-            font-size: 1.5rem;
-        }
-
         mjx-container {
             font-size: 1.5rem !important;
         }
 
         @media screen and (min-width: 600px) {
-            #prompt {
-                font-size: 2rem;
-            }
-
             mjx-container {
                 font-size: 2.5rem !important;
             }
-
-            #content,
-            #steps {
-                display: grid;
-                gap: 2rem;
-            }
-        }
-
-        textarea {
-            background-color: black;
-            color: white;
-            width: 100%;
-            height: 10rem;
-            border: 1px solid white;
-            font-size: 16px;
-        }
-
-        #stats {
-            font-size: 16px;
-            text-align: start;
-        }
-
-        #actions>div {
-            display: flex;
-            justify-content: center;
-            gap: 1em;
-            width: 100%;
-        }
-
-        #actions button {
-            max-width: 500px;
-        }
-
-        button {
-            background-color: black;
-            color: white;
-            padding: .5rem;
-            border: 1px solid white;
-            width: 100%;
-            cursor: pointer;
-        }
-
-        svg {
-            stroke: white;
-            fill: white;
-            width: 20px;
-        }
-
-        #content,
-        #steps {
-            display: grid;
-            gap: 1rem;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        #next>button {
-            background-color: rgb(43, 43, 43);
-        }
-
-        #feedback>button:nth-child(1) {
-            background-color: rgba(255, 0, 0, 0.4);
-        }
-
-        #feedback>button:nth-child(2) {
-            background-color: rgba(0, 255, 0, 0.4);
-        }
-
-        #next>button:nth-child(1) {
-            background-color: rgba(0, 255, 0, 0.2);
-        }
-
-        dialog::backdrop {
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        #settings {
-            text-align: start;
         }
     </style>
 
@@ -162,6 +65,12 @@
         async function renderRandom(seed) {
             initRandom(seed);
 
+            if (generators().length == 0) {
+                document.getElementById('prompt').innerHTML = 'No categories selected';
+                document.getElementById('problem').innerHTML = '';
+                return;
+            }
+
             let { prompt, problem, solution, steps, explanation } = generators()[randInt(generators().length)]();
             if (solution === '')
                 solution = '0';
@@ -174,7 +83,7 @@
             if (steps) {
                 steps = filterDuplicateSteps(steps, problem, solution);
                 for (let step of steps) {
-                    document.getElementById('steps').innerHTML += '<div style="display: none;">`' + step + ' = `</div>';
+                    document.getElementById('steps').innerHTML += '<div class="hidden">`' + step + ' = `</div>';
                 }
             }
 
@@ -185,9 +94,9 @@
             step = 0;
             document.getElementById('steps').innerHTML = '';
             document.getElementById('notes').value = '';
-            document.getElementById('solution').style.display = 'none';
-            document.getElementById('next').style.display = 'flex';
-            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('solution').classList.add('hidden');
+            document.getElementById('next').classList.remove('hidden');
+            document.getElementById('feedback').classList.add('hidden');
             recordPlayed(wasCorrect);
             refreshStats();
             renderRandom();
@@ -199,11 +108,11 @@
             step++;
 
             if (step > document.getElementById('steps').childElementCount) {
-                document.getElementById('solution').style.display = 'block';
-                document.getElementById('next').style.display = 'none';
-                document.getElementById('feedback').style.display = 'flex';
+                document.getElementById('solution').classList.remove('hidden');
+                document.getElementById('next').classList.add('hidden');
+                document.getElementById('feedback').classList.remove('hidden');
             } else {
-                document.getElementById('steps').children[step - 1].style.display = 'block';
+                document.getElementById('steps').children[step - 1].classList.remove('hidden');
             }
         }
 
@@ -220,8 +129,8 @@
 
         function initSettings() {
             document.getElementById('settings').children[1].innerHTML = Object.keys(generatorConfig).map((c) =>
-                `<input type="checkbox" name="${c}" ${getSelectedCategories().includes(c) ? 'checked' : ''}>` +
-                `<label for="${c}">${generatorConfig[c].name}</label><br>`).join('');
+                `<div><input type="checkbox" id="setting-cb-${c}" name="${c}" ${getSelectedCategories().includes(c) ? 'checked' : ''} class="accent-black">` +
+                `<label for="setting-cb-${c}">&nbsp;${generatorConfig[c].name}</label></div>`).join('');
         }
 
         function refreshStats() {
@@ -233,42 +142,47 @@
 
         window.saveSettings = () => {
             const selectedCategories = Array.from(document.getElementById('settings').children[1].children)
-                .filter((c) => c.tagName === 'INPUT' && c.checked).map((c) => c.name);
+                .filter((c) => c.firstChild.type === 'checkbox' && c.firstChild.checked).map((c) => c.firstChild.name);
             setSelectedCategories(selectedCategories.join(''));
-            document.getElementById('settings').close();
+            window.location.reload();
         }
 
     </script>
 </head>
 
-<body>
+<body class="bg-black text-white font-mono p-8">
 
-    <div id="content">
-        <div style="text-align: start; cursor: pointer;" onclick="document.getElementById('settings').showModal()"><svg
-                xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 50 50">
+    <div class="text-center grid gap-4 md:gap-8">
+        <div class="cursor-pointer" onclick="document.getElementById('settings').showModal()">
+            <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20"
+                height="20" viewBox="0 0 50 50">
                 <path
                     d="M47.16,21.221l-5.91-0.966c-0.346-1.186-0.819-2.326-1.411-3.405l3.45-4.917c0.279-0.397,0.231-0.938-0.112-1.282 l-3.889-3.887c-0.347-0.346-0.893-0.391-1.291-0.104l-4.843,3.481c-1.089-0.602-2.239-1.08-3.432-1.427l-1.031-5.886 C28.607,2.35,28.192,2,27.706,2h-5.5c-0.49,0-0.908,0.355-0.987,0.839l-0.956,5.854c-1.2,0.345-2.352,0.818-3.437,1.412l-4.83-3.45 c-0.399-0.285-0.942-0.239-1.289,0.106L6.82,10.648c-0.343,0.343-0.391,0.883-0.112,1.28l3.399,4.863 c-0.605,1.095-1.087,2.254-1.438,3.46l-5.831,0.971c-0.482,0.08-0.836,0.498-0.836,0.986v5.5c0,0.485,0.348,0.9,0.825,0.985 l5.831,1.034c0.349,1.203,0.831,2.362,1.438,3.46l-3.441,4.813c-0.284,0.397-0.239,0.942,0.106,1.289l3.888,3.891 c0.343,0.343,0.884,0.391,1.281,0.112l4.87-3.411c1.093,0.601,2.248,1.078,3.445,1.424l0.976,5.861C21.3,47.647,21.717,48,22.206,48 h5.5c0.485,0,0.9-0.348,0.984-0.825l1.045-5.89c1.199-0.353,2.348-0.833,3.43-1.435l4.905,3.441 c0.398,0.281,0.938,0.232,1.282-0.111l3.888-3.891c0.346-0.347,0.391-0.894,0.104-1.292l-3.498-4.857 c0.593-1.08,1.064-2.222,1.407-3.408l5.918-1.039c0.479-0.084,0.827-0.5,0.827-0.985v-5.5C47.999,21.718,47.644,21.3,47.16,21.221z M25,32c-3.866,0-7-3.134-7-7c0-3.866,3.134-7,7-7s7,3.134,7,7C32,28.866,28.866,32,25,32z">
                 </path>
-            </svg></div>
-        <dialog id="settings">
+            </svg>
+        </div>
+        <dialog id="settings" class="text-start backdrop:bg-black/60 p-4 bg-black text-white border">
             <h2>Settings</h2>
-            <div></div>
-            <button onclick="saveSettings()">Save</button>
+            <div class="p-2 grid gap-2"></div>
+            <button onclick="saveSettings()" class="bg-black text-white p-2 border w-full cursor-pointer">Save</button>
         </dialog>
-        <div id="stats"></div>
-        <div id="prompt"></div>
-        <div style="display: flex; justify-content: center;">
+        <div id="stats" class="text-start"></div>
+        <div id="prompt" class="text-2xl md:text-4xl"></div>
+        <div class="flex justify-center">
             <div id="problem"> </div>
-            <div style="align-content: center; cursor: pointer;"
-                onclick="document.getElementById('explanation').showModal()">&nbsp;&nbsp;&nbsp;`(?)`</div>
-            <dialog id="explanation" onclick="document.getElementById('explanation').close()" style="cursor: pointer;">
+            <div class="content-center cursor-pointer" onclick="document.getElementById('explanation').showModal()">
+                &nbsp;&nbsp;&nbsp;`(?)`</div>
+            <dialog id="explanation" onclick="document.getElementById('explanation').close()"
+                class="backdrop:bg-black/60 p-4 bg-black text-white border pointer">
             </dialog>
         </div>
-        <div id="steps"> </div>
-        <div id="solution" style="display: none;"> </div>
+        <div id="steps" class="grid gap-4 md:gap-8"> </div>
+        <div id="solution" class="hidden"> </div>
         <div id="actions">
-            <div id="next">
-                <button onclick="showAllSteps()"><svg height="50" viewBox="0 0 22 32.5"
+            <div id="next" class="flex justify-center gap-4 w-full">
+                <button onclick="showAllSteps()"
+                    class="bg-[#00ff0033] p-2 border w-full cursor-pointer max-w-{500px} flex justify-center">
+                    <svg class="stroke-white fill-white w-5" height="50" viewBox="0 0 22 32.5"
                         xmlns="http://www.w3.org/2000/svg">
                         <g>
                             <path
@@ -279,7 +193,9 @@
                                 d="m 11,10.588772 c 0.512836,0 0.935507,0.386041 0.993272,0.883379 L 12,11.588772 V 22.584 l 8.292893,-8.291107 c 0.360484,-0.360484 0.927715,-0.388213 1.320006,-0.08319 l 0.09421,0.08319 c 0.360484,0.360484 0.388213,0.927715 0.08319,1.320006 l -0.08319,0.09421 -10,10 c -0.03539,0.03539 -0.07278,0.06758 -0.1118,0.09656 l -0.111245,0.07166 v 0 l -0.112726,0.05345 v 0 l -0.105343,0.03538 v 0 l -0.148519,0.02901 v 0 L 11,26 v 0 l -0.07524,-0.0028 v 0 l -0.125488,-0.01745 v 0 l -0.111416,-0.0295 v 0 l -0.111079,-0.04393 v 0 L 10.479287,25.854 v 0 l -0.09219,-0.06371 v 0 l -0.09421,-0.08319 v 0 l -9.99999978,-10 c -0.39052429,-0.390524 -0.39052429,-1.02369 0,-1.414214 0.36048396,-0.360484 0.92771498,-0.388213 1.32000618,-0.08319 l 0.094207,0.08319 L 10,22.584 V 11.588772 c 0,-0.552284 0.447715,-1 1,-1 z" />
                         </g>
                     </svg></button>
-                <button onclick="showNextStep()"><svg xmlns="http://www.w3.org/2000/svg"
+                <button onclick="showNextStep()"
+                    class="bg-white/10 p-2 border w-full cursor-pointer max-w-{500px} flex justify-center ">
+                    <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink" height="50" viewBox="0 0 22 32.5">
                         <g>
                             <path
@@ -287,15 +203,19 @@
                         </g>
                     </svg></button>
             </div>
-            <div id="feedback" style="display: none;">
-                <button onclick="newProblem(false)"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" height="40"
-                        viewBox="0 0 30 30">
+            <div id="feedback" class="justify-center gap-4 w-full hidden">
+                <button onclick="newProblem(false)"
+                    class="bg-red-500/40 p-2 border w-full cursor-pointer max-w-{500px} flex justify-center">
+                    <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                        height="40" viewBox="0 0 30 30">
                         <path
                             d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z">
                         </path>
                     </svg></button>
-                <button onclick="newProblem(true)"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" height="50"
-                        viewBox="0 0 50 50" color="white" style="stroke: white;fill: white;">
+                <button onclick="newProblem(true)"
+                    class="bg-green-500/40 p-2 border w-full cursor-pointer max-w-{500px} flex justify-center">
+                    <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                        height="50" viewBox="0 0 50 50" color="white">
                         <path
                             d="M 41.9375 8.625 C 41.273438 8.648438 40.664063 9 40.3125 9.5625 L 21.5 38.34375 L 9.3125 27.8125 C 8.789063 27.269531 8.003906 27.066406 7.28125 27.292969 C 6.5625 27.515625 6.027344 28.125 5.902344 28.867188 C 5.777344 29.613281 6.078125 30.363281 6.6875 30.8125 L 20.625 42.875 C 21.0625 43.246094 21.640625 43.410156 22.207031 43.328125 C 22.777344 43.242188 23.28125 42.917969 23.59375 42.4375 L 43.6875 11.75 C 44.117188 11.121094 44.152344 10.308594 43.78125 9.644531 C 43.410156 8.984375 42.695313 8.589844 41.9375 8.625 Z">
                         </path>
@@ -303,7 +223,8 @@
             </div>
         </div>
 
-        <textarea id="notes" placeholder="Notes" onclick="event.stopPropagation()"></textarea>
+        <textarea id="notes" placeholder="Notes" onclick="event.stopPropagation()"
+            class="bg-black w-full min-h-40 border text-base p-2"></textarea>
     </div>
 
 
