@@ -49,3 +49,11 @@ export function setSelectedCategories(categories) {
     url.searchParams.set('filter', getSelectedCategories());
     window.history.replaceState(getSelectedCategories(), '', url.toString());
 }
+
+export function onlyUseX() {
+    return (Cookies.get('useVariables') ?? 'x') === 'x';
+}
+
+export function setOnlyUseX(useX) {
+    Cookies.set('useVariables', useX ? 'x' : 'abcxyz', { sameSite: 'strict', expires: 10000 });
+}

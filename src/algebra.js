@@ -124,6 +124,10 @@ export class Term {
         return new Term(Math.abs(this.factor), this.variables);
     }
 
+    negative() {
+        return new Term(-this.factor, this.variables);
+    }
+
     lcm(term) {
         return this.multiply(term).abs().divide(this.gcd(term));
     }
@@ -212,8 +216,6 @@ export class TermSum {
 
         if (commonTerm == null)
             commonTerm = this.gcd();
-        else
-            commonTerm = commonTerm.gcd(this.gcd());
 
         if (commonTerm.isOne() || this.terms.length <= 1)
             return this.render();
@@ -289,6 +291,14 @@ export class TermSum {
     isZero() {
         return this.terms.length == 0;
     }
+
+    negative() {
+        const result = new TermSum();
+        for (let term of this.terms) {
+            result.push(term.negative());
+        }
+        return result;
+    }
 }
 
 export class SimpleFraction {
@@ -304,7 +314,7 @@ export class SimpleFraction {
     render() {
         if (this.isZero())
             return '0';
-        if (this.denominator.factor == 1 && this.denominator.variables.length == 0) {
+        if (this.denominator.isOne()) {
             if (this.numerator.terms.length == 1 && this.numerator.terms[0].factor > 0)
                 return this.sign + this.numerator.render();
             else
@@ -314,8 +324,11 @@ export class SimpleFraction {
         return `${this.sign}(${this.numerator.render()}) / (${this.denominator.render()})`;
     }
 
-    renderFactoredOut() {
-        return `${this.sign}(${this.numerator.renderFactoredOut()}) / (${this.denominator.render()})`;
+    renderFactoredOut({ negative } = { negative: false }) {
+        let factorOut = this.numerator.gcd();
+        if (negative)
+            factorOut = factorOut.negative();
+        return `${this.sign}(${this.numerator.renderFactoredOut(factorOut)}) / (${this.denominator.render()})`;
     }
 
     simplifyNumerator(steps = []) {
@@ -349,12 +362,18 @@ export class SimpleFraction {
             return new SimpleFraction(num, den, sign);
         }
         const commonterm = this.numerator.gcd().gcd(this.denominator);
+        const negate = den.divide(commonterm).negative().isOne();
         if (!commonterm.isOne()) {
             steps.push(`${this.render()}`)
-            steps.push(`<hidden>${this.renderFactoredOut()}`)
+            steps.push(`<hidden>${this.renderFactoredOut({ negative: negate })}`)
         }
         num = num.divide(commonterm);
         den = den.divide(commonterm);
+
+        if (negate) {
+            num = num.negative();
+            den = Term.one;
+        }
 
         const result = new SimpleFraction(num, den, sign);
 

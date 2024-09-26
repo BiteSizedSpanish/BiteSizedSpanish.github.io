@@ -1,3 +1,5 @@
+import { onlyUseX } from "./generators/problemgenerators.js";
+
 ////////  randomness courtesy of bryc https://stackoverflow.com/a/47593316 ///////// 
 function cyrb128(str) {
     let h1 = 1779033703, h2 = 3144134277,
@@ -60,16 +62,20 @@ export function shuffledArray(len) {
     return array;
 }
 let rand = null;
+let randSeed = '';
 let shuffled = [];
 
 export function initRandom(p) {
     if (!p) {
         const url = new URL(window.location.href);
         p = randomStr(8, Math.random);
+        if (onlyUseX())
+            p = 'x_' + p; 
         url.searchParams.set('p', p);
         window.history.pushState(p, document.title, url.toString());
     }
 
+    randSeed = p;
     var sfcSeed = cyrb128(p);
     rand = sfc32(sfcSeed[0], sfcSeed[1], sfcSeed[2], sfcSeed[3]);
 
@@ -97,6 +103,8 @@ export function operation(seed = null) {
 }
 
 export function randVariable(seed = null) {
+    if (randSeed.startsWith('x_'))
+        return 'x';
     return pickRandomUnique(['a', 'b', 'c', 'x', 'y', 'z'], seed ?? randInt(6));
 }
 

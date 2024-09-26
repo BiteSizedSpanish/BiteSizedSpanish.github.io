@@ -42,7 +42,7 @@
     <script src=" https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js "></script>
     <script type="module">
         import { initRandom, randInt } from './randutils.js';
-        import { generators, getSelectedCategories, setSelectedCategories, generatorConfig } from './generators/problemgenerators.js';
+        import { generators, getSelectedCategories, setSelectedCategories, generatorConfig, onlyUseX, setOnlyUseX } from './generators/problemgenerators.js';
         import { getStats, recordPlayed } from './stats.js';
 
         let step = 0;
@@ -141,6 +141,10 @@
             document.getElementById('settings').children[1].innerHTML = Object.keys(generatorConfig).map((c) =>
                 `<div><input type="checkbox" id="setting-cb-${c}" name="${c}" ${getSelectedCategories().includes(c) ? 'checked' : ''} class="accent-black">` +
                 `<label for="setting-cb-${c}">&nbsp;${generatorConfig[c].name}</label></div>`).join('');
+
+            if (onlyUseX()) {
+                document.getElementById('setting-var-x').checked = true;
+            }
         }
 
         function refreshStats() {
@@ -154,6 +158,8 @@
             const selectedCategories = Array.from(document.getElementById('settings').children[1].children)
                 .filter((c) => c.firstChild.type === 'checkbox' && c.firstChild.checked).map((c) => c.firstChild.name);
             setSelectedCategories(selectedCategories.join(''));
+            setOnlyUseX(document.getElementById('setting-var-x').checked);
+
             window.location.reload();
         }
 
@@ -174,6 +180,13 @@
         <dialog id="settings" class="text-start backdrop:bg-black/60 p-4 bg-black text-white border">
             <h2>Settings</h2>
             <div class="p-2 grid gap-2"></div>
+            <div>Variables</div>
+            <div class="p-2 grid gap-2">
+                <div>
+                    <input type="checkbox" id="setting-var-x" name="var-x" class="accent-black"><label
+                        for="setting-var-x">&nbsp;Only use x</label>
+                </div>
+            </div>
             <button onclick="saveSettings()"
                 class="bg-black text-white p-2 border rounded-lg w-full cursor-pointer">Save</button>
         </dialog>
