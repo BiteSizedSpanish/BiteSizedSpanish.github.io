@@ -87,7 +87,11 @@
                 steps = filterDuplicateSteps(steps, problem, solution);
                 for (let step of steps) {
                     if (step.includes('<hidden>')) {
-                        document.getElementById('steps').innerHTML += '<details class="hidden"><summary class="text-sm text-gray-500 cursor-pointer select-none">show intermediate step</summary><div>`' + step.replace('<hidden>', '') + ' = `</div></details>';
+                        const content = '<div class="p-2 md:p-4">`' + step.replace('<hidden>', '') + ' = `</div>';
+                        if (document.getElementById('steps').lastChild && document.getElementById('steps').lastChild.tagName === 'DETAILS')
+                            document.getElementById('steps').lastChild.innerHTML += content;
+                        else
+                            document.getElementById('steps').innerHTML += `<details class="hidden"><summary class="text-sm text-gray-500 cursor-pointer select-none">show intermediate step</summary>${content}</details>`;
                     } else {
                         document.getElementById('steps').innerHTML += '<div class="hidden">`' + step + ' = `</div>';
                         document.getElementById('showNextStep').classList.remove('hidden');
@@ -205,17 +209,17 @@
         <div id="actions">
             <div id="next" class="flex justify-center gap-4 w-full">
                 <button onclick="showAllSteps()"
-                    class="bg-[#00ff0033] p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center">
-                    <span class="p-2"> reveal solution </span>
+                    class="bg-green-900/90 p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center">
+                    <span class="p-2 content-center"> reveal solution </span>
                 </button>
                 <button onclick="showNextStep()" id="showNextStep"
                     class="bg-white/10 p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center ">
-                    <span class="p-2"> next step </span>
+                    <span class="p-2 content-center"> next step </span>
                 </button>
             </div>
             <div id="feedback" class="flex justify-center gap-4 w-full hidden">
                 <button onclick="newProblem(false)"
-                    class="bg-red-500/40 p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center">
+                    class="bg-red-900/90 p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center">
                     <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                         height="40" viewBox="0 0 30 30">
                         <path
@@ -223,7 +227,7 @@
                         </path>
                     </svg></button>
                 <button onclick="newProblem(true)"
-                    class="bg-green-500/40 p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center">
+                    class="bg-green-900/90 p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center">
                     <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                         height="50" viewBox="0 0 50 50" color="white">
                         <path
