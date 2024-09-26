@@ -48,15 +48,17 @@
         let step = 0;
 
         function filterDuplicateSteps(steps, problem, solution) {
-            problem = problem.replaceAll('=', '').trim().replaceAll(' ', '');
-            solution = solution.replaceAll('=', '').trim().replaceAll(' ', '');
+            problem = problem.trim().replaceAll(' ', '');
+            solution = solution.trim().replaceAll(' ', '');
             let filtered = [];
+            let prevStepTrimmed = null;
             for (let step of steps) {
-                const trimmedStep = step.replaceAll('=', '').trim().replaceAll(' ', '');
+                const trimmedStep = step.replace('<hidden>', '').trim().replaceAll(' ', '');
                 if (trimmedStep === problem || trimmedStep === solution)
                     continue;
-                if (filtered.length > 0 && filtered[filtered.length - 1] === step)
+                if (prevStepTrimmed === trimmedStep)
                     continue;
+                prevStepTrimmed = trimmedStep;
                 filtered.push(step);
             }
             return filtered;
@@ -84,10 +86,13 @@
             if (steps) {
                 steps = filterDuplicateSteps(steps, problem, solution);
                 for (let step of steps) {
-                    document.getElementById('steps').innerHTML += '<div class="hidden">`' + step + ' = `</div>';
+                    if (step.includes('<hidden>')) {
+                        document.getElementById('steps').innerHTML += '<details class="hidden"><summary class="text-sm text-gray-500 cursor-pointer select-none">show intermediate step</summary><div>`' + step.replace('<hidden>', '') + ' = `</div></details>';
+                    } else {
+                        document.getElementById('steps').innerHTML += '<div class="hidden">`' + step + ' = `</div>';
+                        document.getElementById('showNextStep').classList.remove('hidden');
+                    }
                 }
-                if (steps.length > 0)
-                    document.getElementById('showNextStep').classList.remove('hidden');
             }
 
             await MathJax.typesetPromise();
@@ -116,6 +121,8 @@
                 document.getElementById('feedback').classList.remove('hidden');
             } else {
                 document.getElementById('steps').children[step - 1].classList.remove('hidden');
+                if (document.getElementById('steps').children[step - 1].tagName === 'DETAILS')
+                    showNextStep();
             }
         }
 

@@ -23,6 +23,22 @@ export class Term {
         return new Term(nonZero(-3, 3) * baseFactor.factor, randVariableTerm(2, 3) + baseFactor.variables);
     }
 
+    static generateNonTrivial() {
+        while (true) {
+            const term = Term.generate();
+            if (!term.isOne())
+                return term;
+        }
+    }
+
+    static generateSimpleNonTrivial() {
+        while (true) {
+            const term = Term.generateSimple();
+            if (!term.isOne())
+                return term;
+        }
+    }
+
     static gcd(a, b) {
         if (b == 0)
             return a;
@@ -276,6 +292,9 @@ export class TermSum {
 }
 
 export class SimpleFraction {
+
+    static one = new SimpleFraction(new TermSum([new Term(1, '')]), new Term(1, ''));
+
     constructor(numerator, denominator, sign = '') {
         this.numerator = numerator;
         this.denominator = denominator;
@@ -332,7 +351,7 @@ export class SimpleFraction {
         const commonterm = this.numerator.gcd().gcd(this.denominator);
         if (!commonterm.isOne()) {
             steps.push(`${this.render()}`)
-            steps.push(`${this.renderFactoredOut()}`)
+            steps.push(`<hidden>${this.renderFactoredOut()}`)
         }
         num = num.divide(commonterm);
         den = den.divide(commonterm);
@@ -340,7 +359,7 @@ export class SimpleFraction {
         const result = new SimpleFraction(num, den, sign);
 
         if (result.numerator.canFactorOut()) {
-            steps.push(`${result.renderFactoredOut()}`)
+            steps.push(`<hidden>${result.renderFactoredOut()}`)
             steps.push(`${result.render()}`)
         }
 

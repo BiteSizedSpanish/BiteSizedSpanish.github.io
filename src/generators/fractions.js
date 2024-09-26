@@ -1,23 +1,6 @@
 import { nonZero, randVariableTerm, randVariable, randInclusive, sign } from "../randutils.js";
 import { Term, TermSum, SimpleFraction, Power } from "../algebra.js";
 
-export function generateReduceSimpleFraction() {
-    let commonTerm = Term.generate();
-
-    let numerator = new TermSum([Term.generate(commonTerm)]);
-    let denominator = Term.generate(commonTerm);
-
-    let fraction = new SimpleFraction(numerator, denominator);
-
-    return {
-        prompt: `Simplify`,
-        problem: `${fraction.render()}`,
-        solution: `${fraction.reduce().render()}`,
-        explanation: `(ax) / (bx) = a / b`
-    };
-}
-
-
 export function generateReduceFractionSimpleDenominator() {
     const result = {
         prompt: `Simplify`,
@@ -25,7 +8,7 @@ export function generateReduceFractionSimpleDenominator() {
         explanation: `(ax) / (bx) = a / b`,
     };
 
-    let commonTerm = Term.generate();
+    let commonTerm = Term.generateNonTrivial();
 
     let numerator = TermSum.generate(
         randInclusive(1, 3),
@@ -55,7 +38,7 @@ export function generateAddFractionCommonDenominator() {
         explanation: `a / x ± b / x = (a±b) / x`,
     };
 
-    let denominator = Term.generate();
+    let denominator = Term.generateNonTrivial();
     let numerator1 = TermSum.generate(randInclusive(1, 2), Term.generateSimple, true);
     let numerator2 = TermSum.generate(randInclusive(1, 2), Term.generateSimple, true);
 
@@ -87,12 +70,17 @@ export function generateAddFraction() {
         explanation: `a / x + b / y = (ay + bx) / (xy)`,
     };
 
-    let fraction1 = new SimpleFraction(
-        TermSum.generate(randInclusive(1, 2), Term.generateSimple, true),
-        Term.generateSimple());
-    let fraction2 = new SimpleFraction(
-        TermSum.generate(randInclusive(1, 2), Term.generateSimple, true),
-        Term.generateSimple());
+    let fraction1 = SimpleFraction.one;
+    let fraction2 = SimpleFraction.one;
+
+    while (fraction1.denominator.isOne() && fraction2.denominator.isOne()) {
+        fraction1 = new SimpleFraction(
+            TermSum.generate(randInclusive(1, 2), Term.generateSimple, true),
+            Term.generateSimple());
+        fraction2 = new SimpleFraction(
+            TermSum.generate(randInclusive(1, 2), Term.generateSimple, true),
+            Term.generateSimple());
+    }
 
     result.problem = `${fraction1.render()} ${sign(0)} ${fraction2.render()}`;
 
@@ -101,21 +89,21 @@ export function generateAddFraction() {
 
     if (expansion1.isOne())
         result.steps.push(
-            `(${fraction1.numerator.renderAsFactor(true)})` +
+            `<hidden>(${fraction1.numerator.renderAsFactor(true)})` +
             ` / (${fraction1.denominator.renderAsFactor(true)})` +
             ` ${sign(0)}` +
             ` (${fraction2.numerator.renderAsFactor(true)} * ${expansion2.renderAsFactor()})` +
             ` / (${fraction2.denominator.renderAsFactor(true)} * ${expansion2.renderAsFactor()})`);
     else if (expansion2.isOne())
         result.steps.push(
-            `(${fraction1.numerator.renderAsFactor(true)} * ${expansion1.renderAsFactor()})` +
+            `<hidden>(${fraction1.numerator.renderAsFactor(true)} * ${expansion1.renderAsFactor()})` +
             ` / (${fraction1.denominator.renderAsFactor(true)} * ${expansion1.renderAsFactor()})` +
             ` ${sign(0)}` +
             ` (${fraction2.numerator.renderAsFactor(true)})` +
             ` / (${fraction2.denominator.renderAsFactor(true)})`);
     else
         result.steps.push(
-            `(${fraction1.numerator.renderAsFactor(true)} * ${expansion1.renderAsFactor()})` +
+            `<hidden>(${fraction1.numerator.renderAsFactor(true)} * ${expansion1.renderAsFactor()})` +
             ` / (${fraction1.denominator.renderAsFactor(true)} * ${expansion1.renderAsFactor()})` +
             ` ${sign(0)}` +
             ` (${fraction2.numerator.renderAsFactor(true)} * ${expansion2.renderAsFactor()})` +
@@ -150,7 +138,7 @@ export function generateSeparateFraction() {
 
     let fraction = new SimpleFraction(
         TermSum.generate(randInclusive(2, 4), Term.generate, true),
-        Term.generateSimple());
+        Term.generateSimpleNonTrivial());
 
     result.problem = `${fraction.render()}`;
 
@@ -172,12 +160,17 @@ export function generateMultiplyFraction() {
         explanation: `a / x * b / y = (ab) / (xy)`,
     }
 
-    let fraction1 = new SimpleFraction(
-        TermSum.generate(randInclusive(1, 2), Term.generateSimple),
-        Term.generateSimple());
-    let fraction2 = new SimpleFraction(
-        TermSum.generate(randInclusive(1, 2), Term.generateSimple),
-        Term.generateSimple());
+    let fraction1 = SimpleFraction.one;
+    let fraction2 = SimpleFraction.one;
+
+    while (fraction1.denominator.isOne() && fraction2.denominator.isOne()) {
+        fraction1 = new SimpleFraction(
+            TermSum.generate(randInclusive(1, 2), Term.generateSimple),
+            Term.generateSimple());
+        fraction2 = new SimpleFraction(
+            TermSum.generate(randInclusive(1, 2), Term.generateSimple),
+            Term.generateSimple());
+    }
 
     result.problem = `${fraction1.render()} * ${fraction2.render()}`;
 
@@ -195,7 +188,7 @@ export function generateMultiplyFraction() {
 
     let product = new SimpleFraction(fraction1.numerator.multiply(fraction2.numerator), fraction1.denominator.multiply(fraction2.denominator))
 
-    result.steps.push(`(${fraction1.numerator.renderAsFactor(true)} * ${fraction2.numerator.renderAsFactor()}) / (${fraction1.denominator.renderAsFactor(true)} * ${fraction2.denominator.renderAsFactor()})`);
+    result.steps.push(`<hidden>(${fraction1.numerator.renderAsFactor(true)} * ${fraction2.numerator.renderAsFactor()}) / (${fraction1.denominator.renderAsFactor(true)} * ${fraction2.denominator.renderAsFactor()})`);
     product = product.simplifyNumerator(result.steps);
     product = product.reduce(result.steps);
 
