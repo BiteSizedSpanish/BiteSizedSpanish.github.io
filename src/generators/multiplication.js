@@ -8,7 +8,7 @@ export function generateFactorOut() {
         explanation: `ax ± bx = (a±b)x`,
     };
 
-    let commonTerm = Term.generate();
+    let commonTerm = Term.generateNonTrivial();
     let terms = TermSum.generate(randInclusive(2, 3), () => Term.generate(commonTerm), true);
 
     result.problem = `${terms.render()}`;
@@ -19,7 +19,7 @@ export function generateFactorOut() {
 }
 
 export function generateExpandFactoredTermSum() {
-    let commonTerm = Term.generate();
+    let commonTerm = Term.generateNonTrivial();
     let sum = TermSum.generate(randInclusive(2, 3), () => Term.generate(commonTerm), true);
 
     return {

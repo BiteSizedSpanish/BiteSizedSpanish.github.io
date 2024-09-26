@@ -26,7 +26,7 @@ export class Term {
     static generateNonTrivial() {
         while (true) {
             const term = Term.generate();
-            if (!term.isOne())
+            if (!term.abs().isOne())
                 return term;
         }
     }
@@ -34,7 +34,7 @@ export class Term {
     static generateSimpleNonTrivial() {
         while (true) {
             const term = Term.generateSimple();
-            if (!term.isOne())
+            if (!term.abs().isOne())
                 return term;
         }
     }
