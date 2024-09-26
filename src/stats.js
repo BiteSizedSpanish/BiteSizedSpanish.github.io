@@ -15,6 +15,16 @@ export function getStats() {
     }
 }
 
+function cat() {
+    if (new URLSearchParams(window.location.search).get('cat')) {
+        Cookies.set('cat', parseInt(new URLSearchParams(window.location.search).get('cat')), { sameSite: 'strict', expires: 10000 });
+    }
+    const n = parseInt(Cookies.get('cat') ?? 0);
+    if (n > 0 && parseInt(Cookies.get('solvedTodayCorrect') ?? 0) % n == 0) {
+        window.location = "./cat.html"
+    }
+}
+
 export function recordPlayed(wasCorrect) {
     Cookies.set('solvedToday', parseInt(Cookies.get('solvedToday') ?? 0) + 1, { sameSite: 'strict', expires: 1 });
     Cookies.set('totalSolved', parseInt(Cookies.get('totalSolved') ?? 0) + 1, { sameSite: 'strict', expires: 10000 });
@@ -24,7 +34,10 @@ export function recordPlayed(wasCorrect) {
         Cookies.set('totalSolvedCorrect', parseInt(Cookies.get('totalSolvedCorrect') ?? 0) + 1, { sameSite: 'strict', expires: 10000 });    
     }
 
-    if (wasCorrect && parseInt(Cookies.get('solvedTodayCorrect') ?? 0) % 10 == 0) {
-        window.location = "./cat.html"
+    if (new URLSearchParams(window.location.search).get('cat')) {
+
+    }
+    if (wasCorrect) {
+        cat();
     }
 }

@@ -80,11 +80,14 @@
             document.getElementById('solution').innerHTML = '`' + solution + '`';
             document.getElementById('explanation').innerHTML = '`' + explanation + '`';
 
+            document.getElementById('showNextStep').classList.add('hidden');
             if (steps) {
                 steps = filterDuplicateSteps(steps, problem, solution);
                 for (let step of steps) {
                     document.getElementById('steps').innerHTML += '<div class="hidden">`' + step + ' = `</div>';
                 }
+                if (steps.length > 0)
+                    document.getElementById('showNextStep').classList.remove('hidden');
             }
 
             await MathJax.typesetPromise();
@@ -164,16 +167,17 @@
         <dialog id="settings" class="text-start backdrop:bg-black/60 p-4 bg-black text-white border">
             <h2>Settings</h2>
             <div class="p-2 grid gap-2"></div>
-            <button onclick="saveSettings()" class="bg-black text-white p-2 border w-full cursor-pointer">Save</button>
+            <button onclick="saveSettings()"
+                class="bg-black text-white p-2 border rounded-lg w-full cursor-pointer">Save</button>
         </dialog>
         <div id="stats" class="text-start"></div>
-        <div id="prompt" class="text-2xl md:text-4xl"></div>
+        <div id="prompt" class="text-2xl md:text-5xl font-serif"></div>
         <div class="flex justify-center">
             <div id="problem"> </div>
             <div class="content-center cursor-pointer" onclick="document.getElementById('explanation').showModal()">
                 &nbsp;&nbsp;&nbsp;`(?)`</div>
             <dialog id="explanation" onclick="document.getElementById('explanation').close()"
-                class="backdrop:bg-black/60 p-4 bg-black text-white border pointer">
+                class="backdrop:bg-black/60 p-4 bg-black text-white border rounded-lg pointer">
             </dialog>
         </div>
         <div id="steps" class="grid gap-4 md:gap-8"> </div>
@@ -181,31 +185,17 @@
         <div id="actions">
             <div id="next" class="flex justify-center gap-4 w-full">
                 <button onclick="showAllSteps()"
-                    class="bg-[#00ff0033] p-2 border w-full cursor-pointer max-w-[500px] flex justify-center">
-                    <svg class="stroke-white fill-white w-5" height="50" viewBox="0 0 22 32.5"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <g>
-                            <path
-                                d="m 11,0 c 0.512836,0 0.935507,0.38604019 0.993272,0.88337888 L 12,1 v 21.584 l 8.292893,-8.291107 c 0.360484,-0.360484 0.927715,-0.388213 1.320006,-0.08319 l 0.09421,0.08319 c 0.360484,0.360484 0.388213,0.927715 0.08319,1.320006 l -0.08319,0.09421 -10,10 c -0.03539,0.03539 -0.07278,0.06758 -0.1118,0.09656 l -0.111245,0.07166 v 0 l -0.112726,0.05345 v 0 l -0.105343,0.03538 v 0 l -0.148519,0.02901 v 0 L 11,26 v 0 l -0.07524,-0.0028 v 0 l -0.125488,-0.01745 v 0 l -0.111416,-0.0295 v 0 l -0.111079,-0.04393 v 0 L 10.479287,25.854 v 0 l -0.09219,-0.06371 v 0 l -0.09421,-0.08319 v 0 l -9.99999978,-10 c -0.39052429,-0.390524 -0.39052429,-1.02369 0,-1.414214 0.36048396,-0.360484 0.92771498,-0.388213 1.32000618,-0.08319 l 0.094207,0.08319 L 10,22.584 V 1 c 0,-0.55228475 0.447715,-1 1,-1 z" />
-                        </g>
-                        <g transform="translate(0,-7.8100487)">
-                            <path
-                                d="m 11,10.588772 c 0.512836,0 0.935507,0.386041 0.993272,0.883379 L 12,11.588772 V 22.584 l 8.292893,-8.291107 c 0.360484,-0.360484 0.927715,-0.388213 1.320006,-0.08319 l 0.09421,0.08319 c 0.360484,0.360484 0.388213,0.927715 0.08319,1.320006 l -0.08319,0.09421 -10,10 c -0.03539,0.03539 -0.07278,0.06758 -0.1118,0.09656 l -0.111245,0.07166 v 0 l -0.112726,0.05345 v 0 l -0.105343,0.03538 v 0 l -0.148519,0.02901 v 0 L 11,26 v 0 l -0.07524,-0.0028 v 0 l -0.125488,-0.01745 v 0 l -0.111416,-0.0295 v 0 l -0.111079,-0.04393 v 0 L 10.479287,25.854 v 0 l -0.09219,-0.06371 v 0 l -0.09421,-0.08319 v 0 l -9.99999978,-10 c -0.39052429,-0.390524 -0.39052429,-1.02369 0,-1.414214 0.36048396,-0.360484 0.92771498,-0.388213 1.32000618,-0.08319 l 0.094207,0.08319 L 10,22.584 V 11.588772 c 0,-0.552284 0.447715,-1 1,-1 z" />
-                        </g>
-                    </svg></button>
-                <button onclick="showNextStep()"
-                    class="bg-white/10 p-2 border w-full cursor-pointer max-w-[500px] flex justify-center ">
-                    <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink" height="50" viewBox="0 0 22 32.5">
-                        <g>
-                            <path
-                                d="M11,0 C11.5128358,0 11.9355072,0.38604019 11.9932723,0.883378875 L12,1 L12,22.584 L20.2928932,14.2928932 C20.6533772,13.9324093 21.2206082,13.9046797 21.6128994,14.2097046 L21.7071068,14.2928932 C22.0675907,14.6533772 22.0953203,15.2206082 21.7902954,15.6128994 L21.7071068,15.7071068 L11.7071068,25.7071068 C11.6717127,25.7425008 11.6343256,25.774687 11.5953066,25.8036654 L11.4840621,25.8753288 L11.4840621,25.8753288 L11.371336,25.9287745 L11.371336,25.9287745 L11.265993,25.9641549 L11.265993,25.9641549 L11.1174742,25.9931658 L11.1174742,25.9931658 L11,26 L11,26 L10.9247615,25.9972121 L10.9247615,25.9972121 L10.7992742,25.9797599 L10.7992742,25.9797599 L10.6878575,25.9502619 L10.6878575,25.9502619 L10.5767785,25.9063266 L10.5767785,25.9063266 L10.4792912,25.8540045 L10.4792912,25.8540045 L10.3871006,25.7902954 L10.3871006,25.7902954 L10.2928932,25.7071068 L10.2928932,25.7071068 L0.292893219,15.7071068 C-0.0976310729,15.3165825 -0.0976310729,14.6834175 0.292893219,14.2928932 C0.65337718,13.9324093 1.22060824,13.9046797 1.61289944,14.2097046 L1.70710678,14.2928932 L10,22.584 L10,1 C10,0.44771525 10.4477153,0 11,0 Z" />
-                        </g>
-                    </svg></button>
+                    class="bg-[#00ff0033] p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center">
+                    <span class="p-2"> reveal solution </span>
+                </button>
+                <button onclick="showNextStep()" id="showNextStep"
+                    class="bg-white/10 p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center ">
+                    <span class="p-2"> next step </span>
+                </button>
             </div>
             <div id="feedback" class="flex justify-center gap-4 w-full hidden">
                 <button onclick="newProblem(false)"
-                    class="bg-red-500/40 p-2 border w-full cursor-pointer max-w-[500px] flex justify-center">
+                    class="bg-red-500/40 p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center">
                     <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                         height="40" viewBox="0 0 30 30">
                         <path
@@ -213,7 +203,7 @@
                         </path>
                     </svg></button>
                 <button onclick="newProblem(true)"
-                    class="bg-green-500/40 p-2 border w-full cursor-pointer max-w-[500px] flex justify-center">
+                    class="bg-green-500/40 p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center">
                     <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                         height="50" viewBox="0 0 50 50" color="white">
                         <path
@@ -224,13 +214,17 @@
         </div>
 
         <textarea id="notes" placeholder="Notes" onclick="event.stopPropagation()"
-            class="bg-black w-full min-h-40 border text-base p-2"></textarea>
+            class="bg-black w-full min-h-40 border rounded-lg text-base p-2"></textarea>
     </div>
 
-    <div class="w-full pt-12 pb-4"><div class="w-full h-[1px] bg-gray-500"></div></div>
+    <div class="w-full pt-12 pb-4">
+        <div class="w-full h-[1px] bg-gray-500"></div>
+    </div>
     <footer class="text-sm text-gray-500">
         Created By Matthias Bergmann<br>
-        Want to report an issue or request a feature? <a href="https://github.com/BiteSizedMath/BiteSizedMath.github.io/issues" class="underline">Click here</a> or <a href="mailto:bergmannmatthias1+bitesizedmath@gmail.com" class="underline">send me an email</a>
+        Want to report an issue or request a feature? <a
+            href="https://github.com/BiteSizedMath/BiteSizedMath.github.io/issues" class="underline">Click here</a> or
+        <a href="mailto:bergmannmatthias1+bitesizedmath@gmail.com" class="underline">send me an email</a>
     </footer>
 
 
