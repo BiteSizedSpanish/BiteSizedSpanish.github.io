@@ -1,119 +1,165 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="description" content="Bite Sized Math">
-    <meta name="keywords" content="Math, Algebra, Practice">
-    <meta name="author" content="Matthias Bergmann">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Bite Sized Math" />
+    <meta name="keywords" content="Math, Algebra, Practice" />
+    <meta name="author" content="Matthias Bergmann" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bite Sized Math</title>
 
-    <link href="/src/style.css" rel="stylesheet">
+    <link href="/src/style.css" rel="stylesheet" />
 
     <script>
-        MathJax = {
-            loader: { load: ['input/asciimath', 'output/chtml', 'ui/menu'] },
-            startup: {
-                ready: () => {
-                    MathJax.startup.defaultReady();
-                    MathJax.startup.promise.then(async () => {
-                        while (!window.initTrainer)
-                            await new Promise(r => setTimeout(r, 100));
-                        window.initTrainer();
-                    });
-                },
-            }
-        };
+      MathJax = {
+        loader: { load: ['input/asciimath', 'output/chtml', 'ui/menu'] },
+        startup: {
+          ready: () => {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(async () => {
+              while (!window.initTrainer)
+                await new Promise((r) => setTimeout(r, 100));
+              window.initTrainer();
+            });
+          },
+        },
+      };
     </script>
-    <script id='MathJax-script' async src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/startup.js'></script>
-    <script src=" https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js "></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/startup.js"></script>
     <script type="module" src="/src/index.ts"></script>
-</head>
+  </head>
 
-<body class="bg-black text-white font-mono p-8">
-
-    <div class="text-center grid gap-4 md:gap-8">
-        <div class="cursor-pointer" onclick="document.getElementById('settings').showModal()">
-            <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20"
-                height="20" viewBox="0 0 50 50">
-                <path
-                    d="M47.16,21.221l-5.91-0.966c-0.346-1.186-0.819-2.326-1.411-3.405l3.45-4.917c0.279-0.397,0.231-0.938-0.112-1.282 l-3.889-3.887c-0.347-0.346-0.893-0.391-1.291-0.104l-4.843,3.481c-1.089-0.602-2.239-1.08-3.432-1.427l-1.031-5.886 C28.607,2.35,28.192,2,27.706,2h-5.5c-0.49,0-0.908,0.355-0.987,0.839l-0.956,5.854c-1.2,0.345-2.352,0.818-3.437,1.412l-4.83-3.45 c-0.399-0.285-0.942-0.239-1.289,0.106L6.82,10.648c-0.343,0.343-0.391,0.883-0.112,1.28l3.399,4.863 c-0.605,1.095-1.087,2.254-1.438,3.46l-5.831,0.971c-0.482,0.08-0.836,0.498-0.836,0.986v5.5c0,0.485,0.348,0.9,0.825,0.985 l5.831,1.034c0.349,1.203,0.831,2.362,1.438,3.46l-3.441,4.813c-0.284,0.397-0.239,0.942,0.106,1.289l3.888,3.891 c0.343,0.343,0.884,0.391,1.281,0.112l4.87-3.411c1.093,0.601,2.248,1.078,3.445,1.424l0.976,5.861C21.3,47.647,21.717,48,22.206,48 h5.5c0.485,0,0.9-0.348,0.984-0.825l1.045-5.89c1.199-0.353,2.348-0.833,3.43-1.435l4.905,3.441 c0.398,0.281,0.938,0.232,1.282-0.111l3.888-3.891c0.346-0.347,0.391-0.894,0.104-1.292l-3.498-4.857 c0.593-1.08,1.064-2.222,1.407-3.408l5.918-1.039c0.479-0.084,0.827-0.5,0.827-0.985v-5.5C47.999,21.718,47.644,21.3,47.16,21.221z M25,32c-3.866,0-7-3.134-7-7c0-3.866,3.134-7,7-7s7,3.134,7,7C32,28.866,28.866,32,25,32z">
-                </path>
+  <body class="bg-black p-8 font-mono text-white">
+    <div class="grid gap-4 text-center md:gap-8">
+      <div
+        class="cursor-pointer"
+        onclick="document.getElementById('settings').showModal()">
+        <svg
+          class="w-5 fill-white stroke-white"
+          xmlns="http://www.w3.org/2000/svg"
+          x="0px"
+          y="0px"
+          width="20"
+          height="20"
+          viewBox="0 0 50 50">
+          <path
+            d="M47.16,21.221l-5.91-0.966c-0.346-1.186-0.819-2.326-1.411-3.405l3.45-4.917c0.279-0.397,0.231-0.938-0.112-1.282 l-3.889-3.887c-0.347-0.346-0.893-0.391-1.291-0.104l-4.843,3.481c-1.089-0.602-2.239-1.08-3.432-1.427l-1.031-5.886 C28.607,2.35,28.192,2,27.706,2h-5.5c-0.49,0-0.908,0.355-0.987,0.839l-0.956,5.854c-1.2,0.345-2.352,0.818-3.437,1.412l-4.83-3.45 c-0.399-0.285-0.942-0.239-1.289,0.106L6.82,10.648c-0.343,0.343-0.391,0.883-0.112,1.28l3.399,4.863 c-0.605,1.095-1.087,2.254-1.438,3.46l-5.831,0.971c-0.482,0.08-0.836,0.498-0.836,0.986v5.5c0,0.485,0.348,0.9,0.825,0.985 l5.831,1.034c0.349,1.203,0.831,2.362,1.438,3.46l-3.441,4.813c-0.284,0.397-0.239,0.942,0.106,1.289l3.888,3.891 c0.343,0.343,0.884,0.391,1.281,0.112l4.87-3.411c1.093,0.601,2.248,1.078,3.445,1.424l0.976,5.861C21.3,47.647,21.717,48,22.206,48 h5.5c0.485,0,0.9-0.348,0.984-0.825l1.045-5.89c1.199-0.353,2.348-0.833,3.43-1.435l4.905,3.441 c0.398,0.281,0.938,0.232,1.282-0.111l3.888-3.891c0.346-0.347,0.391-0.894,0.104-1.292l-3.498-4.857 c0.593-1.08,1.064-2.222,1.407-3.408l5.918-1.039c0.479-0.084,0.827-0.5,0.827-0.985v-5.5C47.999,21.718,47.644,21.3,47.16,21.221z M25,32c-3.866,0-7-3.134-7-7c0-3.866,3.134-7,7-7s7,3.134,7,7C32,28.866,28.866,32,25,32z"></path>
+        </svg>
+      </div>
+      <dialog
+        id="settings"
+        class="border bg-black p-4 text-start text-white backdrop:bg-black/60">
+        <h2>Settings</h2>
+        <div class="grid gap-2 p-2"></div>
+        <div>Variables</div>
+        <div class="grid gap-2 p-2">
+          <div>
+            <input
+              type="checkbox"
+              id="setting-var-x"
+              name="var-x"
+              class="accent-black" /><label for="setting-var-x"
+              >&nbsp;Only use x</label
+            >
+          </div>
+        </div>
+        <button
+          onclick="saveSettings()"
+          class="w-full cursor-pointer rounded-lg border bg-black p-2 text-white">
+          Save
+        </button>
+      </dialog>
+      <div id="stats" class="text-start"></div>
+      <div id="prompt" class="font-serif text-2xl md:text-5xl"></div>
+      <div class="flex justify-center gap-4">
+        <div id="problem" class="flex items-center"></div>
+        <div
+          class="aspect-square cursor-pointer content-center rounded-lg border p-2"
+          onclick="document.getElementById('explanation').showModal()">
+          `?`
+        </div>
+        <dialog
+          id="explanation"
+          onclick="document.getElementById('explanation').close()"
+          class="pointer rounded-lg border bg-black p-4 text-white backdrop:bg-black/60"></dialog>
+      </div>
+      <div id="steps" class="grid gap-4 md:gap-8"></div>
+      <div id="solution" class="hidden"></div>
+      <div id="actions">
+        <div id="next" class="flex w-full justify-center gap-4">
+          <button
+            onclick="showAllSteps()"
+            class="flex w-full max-w-[500px] cursor-pointer justify-center rounded-lg border bg-green-900/90 p-2">
+            <span class="content-center p-2"> reveal solution </span>
+          </button>
+          <button
+            onclick="showNextStep()"
+            id="showNextStep"
+            class="flex w-full max-w-[500px] cursor-pointer justify-center rounded-lg border bg-white/10 p-2">
+            <span class="content-center p-2"> next step </span>
+          </button>
+        </div>
+        <div id="feedback" class="flex hidden w-full justify-center gap-4">
+          <button
+            onclick="newProblem(false)"
+            class="flex w-full max-w-[500px] cursor-pointer justify-center rounded-lg border bg-red-900/90 p-2">
+            <svg
+              class="w-5 fill-white stroke-white"
+              xmlns="http://www.w3.org/2000/svg"
+              x="0px"
+              y="0px"
+              height="40"
+              viewBox="0 0 30 30">
+              <path
+                d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z"></path>
             </svg>
+          </button>
+          <button
+            onclick="newProblem(true)"
+            class="flex w-full max-w-[500px] cursor-pointer justify-center rounded-lg border bg-green-900/90 p-2">
+            <svg
+              class="w-5 fill-white stroke-white"
+              xmlns="http://www.w3.org/2000/svg"
+              x="0px"
+              y="0px"
+              height="50"
+              viewBox="0 0 50 50"
+              color="white">
+              <path
+                d="M 41.9375 8.625 C 41.273438 8.648438 40.664063 9 40.3125 9.5625 L 21.5 38.34375 L 9.3125 27.8125 C 8.789063 27.269531 8.003906 27.066406 7.28125 27.292969 C 6.5625 27.515625 6.027344 28.125 5.902344 28.867188 C 5.777344 29.613281 6.078125 30.363281 6.6875 30.8125 L 20.625 42.875 C 21.0625 43.246094 21.640625 43.410156 22.207031 43.328125 C 22.777344 43.242188 23.28125 42.917969 23.59375 42.4375 L 43.6875 11.75 C 44.117188 11.121094 44.152344 10.308594 43.78125 9.644531 C 43.410156 8.984375 42.695313 8.589844 41.9375 8.625 Z"></path>
+            </svg>
+          </button>
         </div>
-        <dialog id="settings" class="text-start backdrop:bg-black/60 p-4 bg-black text-white border">
-            <h2>Settings</h2>
-            <div class="p-2 grid gap-2"></div>
-            <div>Variables</div>
-            <div class="p-2 grid gap-2">
-                <div>
-                    <input type="checkbox" id="setting-var-x" name="var-x" class="accent-black"><label
-                        for="setting-var-x">&nbsp;Only use x</label>
-                </div>
-            </div>
-            <button onclick="saveSettings()"
-                class="bg-black text-white p-2 border rounded-lg w-full cursor-pointer">Save</button>
-        </dialog>
-        <div id="stats" class="text-start"></div>
-        <div id="prompt" class="text-2xl md:text-5xl font-serif"></div>
-        <div class="flex justify-center gap-4">
-            <div id="problem" class="flex items-center"> </div>
-            <div class="content-center cursor-pointer p-2 border rounded-lg aspect-square"
-                onclick="document.getElementById('explanation').showModal()">`?`</div>
-            <dialog id="explanation" onclick="document.getElementById('explanation').close()"
-                class="backdrop:bg-black/60 p-4 bg-black text-white border rounded-lg pointer">
-            </dialog>
-        </div>
-        <div id="steps" class="grid gap-4 md:gap-8"> </div>
-        <div id="solution" class="hidden"> </div>
-        <div id="actions">
-            <div id="next" class="flex justify-center gap-4 w-full">
-                <button onclick="showAllSteps()"
-                    class="bg-green-900/90 p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center">
-                    <span class="p-2 content-center"> reveal solution </span>
-                </button>
-                <button onclick="showNextStep()" id="showNextStep"
-                    class="bg-white/10 p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center ">
-                    <span class="p-2 content-center"> next step </span>
-                </button>
-            </div>
-            <div id="feedback" class="flex justify-center gap-4 w-full hidden">
-                <button onclick="newProblem(false)"
-                    class="bg-red-900/90 p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center">
-                    <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                        height="40" viewBox="0 0 30 30">
-                        <path
-                            d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z">
-                        </path>
-                    </svg></button>
-                <button onclick="newProblem(true)"
-                    class="bg-green-900/90 p-2 border rounded-lg w-full cursor-pointer max-w-[500px] flex justify-center">
-                    <svg class="stroke-white fill-white w-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                        height="50" viewBox="0 0 50 50" color="white">
-                        <path
-                            d="M 41.9375 8.625 C 41.273438 8.648438 40.664063 9 40.3125 9.5625 L 21.5 38.34375 L 9.3125 27.8125 C 8.789063 27.269531 8.003906 27.066406 7.28125 27.292969 C 6.5625 27.515625 6.027344 28.125 5.902344 28.867188 C 5.777344 29.613281 6.078125 30.363281 6.6875 30.8125 L 20.625 42.875 C 21.0625 43.246094 21.640625 43.410156 22.207031 43.328125 C 22.777344 43.242188 23.28125 42.917969 23.59375 42.4375 L 43.6875 11.75 C 44.117188 11.121094 44.152344 10.308594 43.78125 9.644531 C 43.410156 8.984375 42.695313 8.589844 41.9375 8.625 Z">
-                        </path>
-                    </svg></button>
-            </div>
-        </div>
+      </div>
 
-        <textarea id="notes" placeholder="Notes" onclick="event.stopPropagation()"
-            class="bg-black w-full min-h-40 border rounded-lg text-base p-2"></textarea>
+      <textarea
+        id="notes"
+        placeholder="Notes"
+        onclick="event.stopPropagation()"
+        class="min-h-40 w-full rounded-lg border bg-black p-2 text-base"></textarea>
     </div>
 
-    <div class="w-full pt-12 pb-4">
-        <div class="w-full h-[1px] bg-gray-500"></div>
+    <div class="w-full pb-4 pt-12">
+      <div class="h-[1px] w-full bg-gray-500"></div>
     </div>
     <footer class="text-sm text-gray-500">
-        Created By Matthias Bergmann<br>
-        Want to report an issue or request a feature? <a
-            href="https://github.com/BiteSizedMath/BiteSizedMath.github.io/issues" class="underline">Click here</a> or
-        <a href="mailto:bergmannmatthias1+bitesizedmath@gmail.com" class="underline">send me an email</a>
+      Created By Matthias Bergmann<br />
+      Want to report an issue or request a feature?
+      <a
+        href="https://github.com/BiteSizedMath/BiteSizedMath.github.io/issues"
+        class="underline"
+        >Click here</a
+      >
+      or
+      <a
+        href="mailto:bergmannmatthias1+bitesizedmath@gmail.com"
+        class="underline"
+        >send me an email</a
+      >
     </footer>
-
-
-</body>
-
+  </body>
 </html>
