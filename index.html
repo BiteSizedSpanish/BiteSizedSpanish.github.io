@@ -10,18 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bite Sized Math</title>
 
-    <link href="/output.css" rel="stylesheet">
-    <style>
-        mjx-container {
-            font-size: 1.5rem !important;
-        }
-
-        @media screen and (min-width: 600px) {
-            mjx-container {
-                font-size: 2.5rem !important;
-            }
-        }
-    </style>
+    <link href="/src/style.css" rel="stylesheet">
 
     <script>
         MathJax = {
@@ -69,10 +58,10 @@
         </dialog>
         <div id="stats" class="text-start"></div>
         <div id="prompt" class="text-2xl md:text-5xl font-serif"></div>
-        <div class="flex justify-center">
-            <div id="problem"> </div>
-            <div class="content-center cursor-pointer" onclick="document.getElementById('explanation').showModal()">
-                &nbsp;&nbsp;&nbsp;`(?)`</div>
+        <div class="flex justify-center gap-4">
+            <div id="problem" class="flex items-center"> </div>
+            <div class="content-center cursor-pointer p-2 border rounded-lg aspect-square"
+                onclick="document.getElementById('explanation').showModal()">`?`</div>
             <dialog id="explanation" onclick="document.getElementById('explanation').close()"
                 class="backdrop:bg-black/60 p-4 bg-black text-white border rounded-lg pointer">
             </dialog>
