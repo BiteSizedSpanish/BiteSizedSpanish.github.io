@@ -1,11 +1,14 @@
-import { nonZero, randVariableTerm, randVariable, randInclusive, sign } from "../randutils.js";
-import { Term, TermSum, SimpleFraction, Power } from "../algebra.js";
+import { randInclusive, sign } from "../randutils.js";
+import { Term, TermSum, SimpleFraction } from "../algebra.js";
+import { GeneratorResult } from "./problemgenerators.js";
 
-export function generateReduceFractionSimpleDenominator() {
-    const result = {
+export function generateReduceFractionSimpleDenominator(): GeneratorResult {
+    const result: GeneratorResult = {
         prompt: `Simplify`,
         steps: [],
         explanation: `(ax) / (bx) = a / b`,
+        problem: '',
+        solution: '',
     };
 
     let commonTerm = Term.generateNonTrivial();
@@ -31,11 +34,13 @@ export function generateReduceFractionSimpleDenominator() {
 }
 
 
-export function generateAddFractionCommonDenominator() {
-    const result = {
+export function generateAddFractionCommonDenominator(): GeneratorResult {
+    const result: GeneratorResult = {
         prompt: `Add Fraction`,
         steps: [],
         explanation: `a / x ± b / x = (a±b) / x`,
+        problem: '',
+        solution: '',
     };
 
     let denominator = Term.generateNonTrivial();
@@ -63,11 +68,13 @@ export function generateAddFractionCommonDenominator() {
     return result;
 }
 
-export function generateAddFraction() {
-    const result = {
+export function generateAddFraction(): GeneratorResult {
+    const result: GeneratorResult = {
         prompt: `Add Fraction`,
         steps: [],
         explanation: `a / x + b / y = (ay + bx) / (xy)`,
+        problem: '',
+        solution: '',
     };
 
     let fraction1 = SimpleFraction.one;
@@ -84,8 +91,8 @@ export function generateAddFraction() {
 
     result.problem = `${fraction1.render()} ${sign(0)} ${fraction2.render()}`;
 
-    const expansion1 = fraction1.denominator.lcm(fraction2.denominator).divide(fraction1.denominator);
-    const expansion2 = fraction1.denominator.lcm(fraction2.denominator).divide(fraction2.denominator);
+    const expansion1 = fraction1.denominator.lcm(fraction2.denominator).divide(fraction1.denominator)!;
+    const expansion2 = fraction1.denominator.lcm(fraction2.denominator).divide(fraction2.denominator)!;
 
     if (expansion1.isOne())
         result.steps.push(
@@ -129,11 +136,13 @@ export function generateAddFraction() {
 
 
 
-export function generateSeparateFraction() {
-    const result = {
+export function generateSeparateFraction(): GeneratorResult {
+    const result: GeneratorResult = {
         prompt: `Separate Fraction`,
         steps: [],
         explanation: `(a ± b) / x = a / x ± b / x`,
+        problem: '',
+        solution: '',
     };
 
     let fraction = new SimpleFraction(
@@ -153,11 +162,13 @@ export function generateSeparateFraction() {
     return result;
 }
 
-export function generateMultiplyFraction() {
-    const result = {
+export function generateMultiplyFraction(): GeneratorResult {
+    const result: GeneratorResult = {
         prompt: `Multiply Fraction`,
         steps: [],
         explanation: `a / x * b / y = (ab) / (xy)`,
+        problem: '',
+        solution: '',
     }
 
     let fraction1 = SimpleFraction.one;
@@ -174,7 +185,7 @@ export function generateMultiplyFraction() {
 
     result.problem = `${fraction1.render()} * ${fraction2.render()}`;
 
-    let simplifySteps = [];
+    let simplifySteps: string[] = [];
     fraction1 = fraction1.simplifyNumerator(simplifySteps);
     result.steps.push(...simplifySteps.map(s => `${s} * ${fraction2.render()}`))
     simplifySteps = [];

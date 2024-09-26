@@ -1,8 +1,9 @@
-import { nonZero, randVariableTerm, randVariable, randInclusive, sign, randInt } from "./randutils.js";
+import { nonZero, randVariableTerm, randInt } from "./randutils.js";
 
 export class Term {
-    constructor(factor, variables) {
-        this.factor = factor;
+    variables: string;
+
+    constructor(public factor: number, variables: string) {
         this.variables = variables.split("").sort().join("");
     }
 
@@ -39,7 +40,7 @@ export class Term {
         }
     }
 
-    static gcd(a, b) {
+    static gcd(a: number, b: number): number {
         if (b == 0)
             return a;
         return Term.gcd(b, a % b);
@@ -100,17 +101,17 @@ export class Term {
         return result;
     }
 
-    add(term) {
+    add(term: Term) {
         if (term.variables != this.variables)
             return null;
         return new Term(this.factor + term.factor, this.variables);
     }
 
-    multiply(term) {
+    multiply(term: Term) {
         return new Term(this.factor * term.factor, this.variables + term.variables);
     }
 
-    divide(term) {
+    divide(term: Term) {
         const result = new Term(this.factor / term.factor, this.variables);
         for (let curVar of term.variables) {
             if (!result.variables.includes(curVar))
@@ -128,11 +129,11 @@ export class Term {
         return new Term(-this.factor, this.variables);
     }
 
-    lcm(term) {
-        return this.multiply(term).abs().divide(this.gcd(term));
+    lcm(term: Term) {
+        return this.multiply(term).abs().divide(this.gcd(term))!;
     }
 
-    gcd(term) {
+    gcd(term: Term) {
         const commonFactor = Term.gcd(Math.abs(this.factor), Math.abs(term.factor));
         let commonVariables = '';
         let othertermVariables = term.variables;
@@ -156,11 +157,12 @@ export class Term {
 }
 
 export class TermSum {
-    constructor(terms = []) {
+    public terms: Term[];
+    constructor(terms: Term[] = []) {
         this.terms = terms.filter(t => t.factor != 0);
     }
 
-    static generate(n, termGenerator, uniqueTerms = false) {
+    static generate(n: number, termGenerator: () => Term, uniqueTerms = false) {
         let result = new TermSum();
         while (result.terms.length < n) {
             result.push(termGenerator());
@@ -170,12 +172,12 @@ export class TermSum {
         return result;
     }
 
-    push(term) {
+    push(term: Term) {
         if (term.factor != 0)
             this.terms.push(term);
     }
 
-    add(termSum) {
+    add(termSum: TermSum) {
         const result = new TermSum(this.terms);
         for (let term of termSum.terms) {
             result.push(term);
@@ -183,7 +185,7 @@ export class TermSum {
         return result
     }
 
-    subtract(termSum) {
+    subtract(termSum: TermSum) {
         const result = new TermSum(this.terms);
         for (let term of termSum.terms) {
             result.push(new Term(-term.factor, term.variables));
@@ -212,28 +214,29 @@ export class TermSum {
         return result;
     }
 
-    renderFactoredOut(commonTerm = null) {
+    renderFactoredOut(commonTerm: Term | null = null) {
 
-        if (commonTerm == null)
+        if (!commonTerm)
             commonTerm = this.gcd();
 
         if (commonTerm.isOne() || this.terms.length <= 1)
             return this.render();
 
-        return `${commonTerm.render()}(${this.divide(commonTerm).render()})`;
+        return `${commonTerm.render()}(${this.divide(commonTerm)?.render()})`;
     }
 
     canSimplify() {
         return this.terms.length > this.simplify().terms.length;
     }
 
-    simplify(steps = []) {
-        const result = [];
+    simplify(steps: string[] = []) {
+        const result: Term[] = [];
         for (let term of this.terms) {
             let found = false;
             for (let j = 0; j < result.length; j++) {
-                if (result[j].add(term)) {
-                    result[j] = result[j].add(term);
+                const addResult = result[j].add(term);
+                if (addResult) {
+                    result[j] = addResult;
                     found = true;
                     break;
                 }
@@ -262,15 +265,18 @@ export class TermSum {
         return commonterm;
     }
 
-    divide(divisor) {
+    divide(divisor: Term) {
         const result = new TermSum();
         for (let term of this.terms) {
-            result.push(term.divide(divisor));
+            const divideResult = term.divide(divisor);
+            if (!divideResult)
+                return null;
+            result.push(divideResult);
         }
         return result;
     }
 
-    multiply(termSum) {
+    multiply(termSum: TermSum) {
         const result = new TermSum();
         for (let term1 of this.terms) {
             for (let term2 of termSum.terms) {
@@ -280,7 +286,7 @@ export class TermSum {
         return result;
     }
 
-    multiplyTerm(term) {
+    multiplyTerm(term: Term) {
         const result = new TermSum();
         for (let term1 of this.terms) {
             result.push(term1.multiply(term));
@@ -305,10 +311,7 @@ export class SimpleFraction {
 
     static one = new SimpleFraction(new TermSum([new Term(1, '')]), new Term(1, ''));
 
-    constructor(numerator, denominator, sign = '') {
-        this.numerator = numerator;
-        this.denominator = denominator;
-        this.sign = sign;
+    constructor(public numerator: TermSum, public denominator: Term, public sign: string = '') {
     }
 
     render() {
@@ -331,7 +334,7 @@ export class SimpleFraction {
         return `${this.sign}(${this.numerator.renderFactoredOut(factorOut)}) / (${this.denominator.render()})`;
     }
 
-    simplifyNumerator(steps = []) {
+    simplifyNumerator(steps: string[] = []) {
         const result = new SimpleFraction(this.numerator.simplify(), this.denominator, this.sign);
         if (this.numerator.canSimplify()) {
             steps.push(`${this.render()}`)
@@ -344,7 +347,7 @@ export class SimpleFraction {
         return !this.numerator.gcd().gcd(this.denominator).isOne();
     }
 
-    reduce(steps = []) {
+    reduce(steps: string[] = []) {
         let num = new TermSum(this.numerator.terms.map(t => new Term(t.factor, t.variables)));
         let den = new Term(this.denominator.factor, this.denominator.variables);
 
@@ -361,14 +364,14 @@ export class SimpleFraction {
         if (!this.canReduce()) {
             return new SimpleFraction(num, den, sign);
         }
-        const commonterm = this.numerator.gcd().gcd(this.denominator);
-        const negate = den.divide(commonterm).negative().isOne();
+        const commonterm = num.gcd().gcd(den);
+        const negate = den.divide(commonterm)!.negative().isOne();
         if (!commonterm.isOne()) {
             steps.push(`${this.render()}`)
             steps.push(`<hidden>${this.renderFactoredOut({ negative: negate })}`)
         }
-        num = num.divide(commonterm);
-        den = den.divide(commonterm);
+        num = num.divide(commonterm)!;
+        den = den.divide(commonterm)!;
 
         if (negate) {
             num = num.negative();
@@ -391,12 +394,9 @@ export class SimpleFraction {
 }
 
 export class Power {
-    constructor(base, exponent) {
-        this.base = base;
-        this.exponent = exponent;
-    }
+    constructor(public base: Term, public exponent: Term) { }
 
-    exponentiate(exponent) {
+    exponentiate(exponent: Term) {
         return new Power(this.base, this.exponent.multiply(exponent));
     }
 

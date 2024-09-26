@@ -1,7 +1,7 @@
 import { onlyUseX } from "./generators/problemgenerators.js";
 
 ////////  randomness courtesy of bryc https://stackoverflow.com/a/47593316 ///////// 
-function cyrb128(str) {
+function cyrb128(str: string) {
     let h1 = 1779033703, h2 = 3144134277,
         h3 = 1013904242, h4 = 2773480762;
     for (let i = 0, k; i < str.length; i++) {
@@ -19,7 +19,7 @@ function cyrb128(str) {
     return [h1 >>> 0, h2 >>> 0, h3 >>> 0, h4 >>> 0];
 }
 
-function sfc32(a, b, c, d) {
+function sfc32(a: number, b: number, c: number, d: number) {
     return function () {
         a |= 0; b |= 0; c |= 0; d |= 0;
         let t = (a + b | 0) + d | 0;
@@ -32,7 +32,7 @@ function sfc32(a, b, c, d) {
     }
 }
 
-export function randomStr(length, randomness) {
+export function randomStr(length: number, randomness: () => number) {
     let result = '';
     const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -47,8 +47,8 @@ export function randomStr(length, randomness) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-export function shuffledArray(len) {
-    let array = [];
+export function shuffledArray(len: number) {
+    let array: number[] = [];
 
     for (let i = 0; i < len; i++) {
         array.push(i);
@@ -61,16 +61,16 @@ export function shuffledArray(len) {
     }
     return array;
 }
-let rand = null;
+let rand = sfc32(0, 0, 0, 0);
 let randSeed = '';
-let shuffled = [];
+let shuffled: number[][] = [];
 
-export function initRandom(p) {
+export function initRandom(p: string | null = null) {
     if (!p) {
         const url = new URL(window.location.href);
         p = randomStr(8, Math.random);
         if (onlyUseX())
-            p = 'x_' + p; 
+            p = 'x_' + p;
         url.searchParams.set('p', p);
         window.history.pushState(p, document.title, url.toString());
     }
@@ -86,40 +86,38 @@ export function initRandom(p) {
 }
 addEventListener("popstate", () => { window.location.reload(); });
 
-export function pickRandomUnique(array, seed) {
+export function pickRandomUnique<T>(array: T[], seed: number): T {
     return array[shuffled[array.length][seed]];
 }
 
-export function pickRandom(array, seed) {
+export function pickRandom<T>(array: T[], seed: number): T {
     return array[shuffled[99][seed] % array.length];
 }
 
-export function sign(seed = null) {
+export function sign(seed: number | null = null) {
     return pickRandom(['+', '-'], seed ?? randInt(2));
 }
 
-export function operation(seed = null) {
+export function operation(seed: number | null = null) {
     return pickRandom(['+', '-', '*', '/'], seed ?? randInt(4));
 }
 
-export function randVariable(seed = null) {
+export function randVariable(seed: number | null = null) {
     if (randSeed.startsWith('x_'))
         return 'x';
     return pickRandomUnique(['a', 'b', 'c', 'x', 'y', 'z'], seed ?? randInt(6));
 }
 
-export function randVariableTerm(maxSize, varRange = null) {
-    if (varRange == null)
-        varRange = maxSize;
+export function randVariableTerm(maxSize: number, varRange: number | null = null) {
     let size = randInclusive(0, maxSize);
     let group = '';
     for (let i = 0; i < size; i++) {
-        group += randVariable(randInt(varRange));
+        group += randVariable(randInt(varRange ?? maxSize));
     }
     return group;
 }
 
-export function randInclusive(min, max) {
+export function randInclusive(min: number, max: number) {
     if (max == null) {
         max = min;
         min = 0;
@@ -127,7 +125,7 @@ export function randInclusive(min, max) {
     return randInt(max - min + 1) + min;
 }
 
-export function nonZero(min, max) {
+export function nonZero(min: number, max: number) {
     while (true) {
         let result = randInclusive(min, max);
         if (randInt(3) == 0) // slightly prefer positives
@@ -137,6 +135,6 @@ export function nonZero(min, max) {
     }
 }
 
-export function randInt(max) {
+export function randInt(max: number) {
     return Math.floor(rand() * max);
 }

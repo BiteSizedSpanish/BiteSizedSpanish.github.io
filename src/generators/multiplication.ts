@@ -1,11 +1,14 @@
-import { nonZero, randVariableTerm, randVariable, randInclusive, sign } from "../randutils.js";
-import { Term, TermSum, SimpleFraction, Power } from "../algebra.js";
+import { randInclusive } from "../randutils.js";
+import { Term, TermSum } from "../algebra.js";
+import { GeneratorResult } from "./problemgenerators.js";
 
-export function generateFactorOut() {
+export function generateFactorOut(): GeneratorResult {
     const result = {
         prompt: `Factor out the common factor`,
         steps: [],
         explanation: `ax ± bx = (a±b)x`,
+        problem: '',
+        solution: '',
     };
 
     let commonTerm = Term.generateNonTrivial();
@@ -18,7 +21,7 @@ export function generateFactorOut() {
     return result;
 }
 
-export function generateExpandFactoredTermSum() {
+export function generateExpandFactoredTermSum(): GeneratorResult {
     let commonTerm = Term.generateNonTrivial();
     let sum = TermSum.generate(randInclusive(2, 3), () => Term.generate(commonTerm), true);
 
@@ -26,15 +29,18 @@ export function generateExpandFactoredTermSum() {
         prompt: `Expand`,
         problem: `${sum.renderFactoredOut()}`,
         solution: `${sum.render()}`,
-        explanation: `(a±b)x = ax ± bx`
+        explanation: `(a±b)x = ax ± bx`,
+        steps: [],
     };
 }
 
-export function generateExpandTermSumProduct() {
+export function generateExpandTermSumProduct(): GeneratorResult {
     const result = {
         prompt: `Expand`,
         steps: [],
         explanation: `(a+b)(c+d) = ac + ad + bc + bd`,
+        problem: '',
+        solution: '',
     }
 
     let sum1 = TermSum.generate(2, Term.generateSimple, true);

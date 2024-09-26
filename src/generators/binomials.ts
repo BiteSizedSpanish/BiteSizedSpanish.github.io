@@ -1,11 +1,14 @@
-import { nonZero, randVariableTerm, randVariable, randInclusive, sign } from "../randutils.js";
-import { Term, TermSum, SimpleFraction, Power } from "../algebra.js";
+import { nonZero, randVariableTerm } from "../randutils.js";
+import { Term, TermSum, Power } from "../algebra.js";
+import { GeneratorResult } from "./problemgenerators.js";
 
-export function generateBinomial() {
-    const result = {
+export function generateBinomial(): GeneratorResult {
+    const result: GeneratorResult = {
         prompt: `Expand`,
-        steps: [],
         explanation: `(a±b)^2 = a^2 ± 2ab + b^2`,
+        steps: [],
+        problem: '',
+        solution: '',
     };
 
     const t1 = new Term(nonZero(-3, 3), randVariableTerm(1, 3));
@@ -34,11 +37,13 @@ export function generateBinomial() {
     return result;
 }
 
-export function generateBinomial2() {
-    const result = {
+export function generateBinomial2(): GeneratorResult {
+    const result: GeneratorResult = {
         prompt: `Expand`,
         steps: [],
         explanation: `(a+b)(a-b) = a^2 - b^2`,
+        problem: '',
+        solution: '',
     };
 
     const terms = TermSum.generate(2, () => new Term(nonZero(-3, 3), randVariableTerm(1, 2)), true);

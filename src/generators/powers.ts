@@ -1,11 +1,14 @@
-import { nonZero, randVariableTerm, randVariable, randInclusive, sign } from "../randutils.js";
-import { Term, TermSum, SimpleFraction, Power } from "../algebra.js";
+import { nonZero, randVariable, randInclusive } from "../randutils.js";
+import { Term, Power } from "../algebra.js";
+import { GeneratorResult } from "./problemgenerators.js";
 
-export function generateExponentMultiplication() {
+export function generateExponentMultiplication(): GeneratorResult {
     const result = {
         prompt: `Simplify`,
         steps: [],
         explanation: `a^x * a^y = a^(x+y)`,
+        problem: '',
+        solution: '',
     };
 
     const term1 = new Term(nonZero(-3, 3), randVariable(0).repeat(randInclusive(2, 4)));
@@ -16,11 +19,13 @@ export function generateExponentMultiplication() {
     return result;
 }
 
-export function generateExponentExponentiation() {
+export function generateExponentExponentiation(): GeneratorResult {
     const result = {
         prompt: `Simplify`,
         steps: [],
         explanation: `(a^x)^y = a^(x*y)`,
+        problem: '',
+        solution: '',
     };
 
     const term1 = Term.generateSingleValue();
@@ -34,11 +39,13 @@ export function generateExponentExponentiation() {
     return result;
 }
 
-export function generateMultiplicationExponentiation() {
+export function generateMultiplicationExponentiation(): GeneratorResult {
     const result = {
         prompt: `Write without brackets`,
         steps: [],
         explanation: `(a*b)^x = a^x * b^x`,
+        problem: '',
+        solution: '',
     };
 
     const term1 = new Term(1, randVariable(0));
