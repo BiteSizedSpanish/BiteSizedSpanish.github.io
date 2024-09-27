@@ -1,3 +1,4 @@
+import { cookiesSetSafe } from '../stats.js';
 import * as addition from './addition.js';
 import * as binomials from './binomials.js';
 import * as fractions from './fractions.js';
@@ -55,7 +56,7 @@ export function getSelectedCategories() {
 }
 
 export function setSelectedCategories(categories: string) {
-  Cookies.set('filter', categories, { sameSite: 'strict', expires: 10000 });
+  cookiesSetSafe('filter', categories, { sameSite: 'strict', expires: 10000 });
   const url = new URL(window.location.href);
   url.searchParams.set('filter', getSelectedCategories());
   window.history.replaceState(getSelectedCategories(), '', url.toString());
@@ -66,7 +67,7 @@ export function onlyUseX() {
 }
 
 export function setOnlyUseX(useX: boolean) {
-  Cookies.set('useVariables', useX ? 'x' : 'abcxyz', {
+  cookiesSetSafe('useVariables', useX ? 'x' : 'abcxyz', {
     sameSite: 'strict',
     expires: 10000,
   });

@@ -8,6 +8,7 @@ import {
   setOnlyUseX,
 } from './generators/problemgenerators.js';
 import { getStats, recordPlayed } from './stats.js';
+import Cookies from 'js-cookie';
 
 declare global {
   interface Window {
@@ -17,6 +18,8 @@ declare global {
     initTrainer: () => void;
     saveSettings: () => void;
     MathJax: any;
+    acceptCookies: () => void;
+    rejectCookies: () => void;
   }
 }
 
@@ -167,4 +170,17 @@ window.saveSettings = () => {
   );
 
   window.location.reload();
+};
+
+if (Cookies.get('cookiesEnabled') !== 'true') {
+  document.getElementById('cookieBanner')!.classList.remove('hidden');
+}
+
+window.rejectCookies = () => {
+  document.getElementById('cookieBanner')!.classList.add('hidden');
+};
+
+window.acceptCookies = () => {
+  Cookies.set('cookiesEnabled', 'true', { sameSite: 'strict', expires: 10000 });
+  document.getElementById('cookieBanner')!.classList.add('hidden');
 };
