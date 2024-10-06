@@ -134,13 +134,13 @@ export function randInclusive(min: number, max: number) {
   return randInt(max - min + 1) + min;
 }
 
-export function nonZero(min: number, max: number) {
+export function nonZero(min: number, max: number, exclude: number[] = []) {
   while (true) {
     let result = randInclusive(min, max);
     if (randInt(3) == 0)
       // slightly prefer positives
       result = Math.abs(result);
-    if (result != 0) {
+    if (result != 0 && !exclude.includes(result)) {
       return result;
     }
   }

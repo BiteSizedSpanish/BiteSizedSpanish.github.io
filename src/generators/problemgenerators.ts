@@ -4,6 +4,8 @@ import * as binomials from './binomials.js';
 import * as fractions from './fractions.js';
 import * as multiplication from './multiplication.js';
 import * as powers from './powers.js';
+import * as derivatives from './derivatives.js';
+import * as vectors from './vectors.js';
 import Cookies from 'js-cookie';
 
 export type GeneratorResult = {
@@ -12,6 +14,7 @@ export type GeneratorResult = {
   problem: string;
   steps: string[];
   solution: string;
+  isTeX?: boolean;
 };
 
 export const generatorConfig = {
@@ -20,6 +23,8 @@ export const generatorConfig = {
   b: { generators: binomials, name: 'Binomial Formulas' },
   f: { generators: fractions, name: 'Fractions' },
   p: { generators: powers, name: 'Powers and Exponents' },
+  d: { generators: derivatives, name: 'Derivatives' },
+  v: { generators: vectors, name: 'Vectors and Matrices' },
 };
 
 export function generators() {

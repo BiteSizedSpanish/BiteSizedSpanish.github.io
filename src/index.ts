@@ -53,24 +53,32 @@ async function renderRandom(seed: string | null = null) {
     return;
   }
 
-  let { prompt, problem, solution, steps, explanation } =
+  let { prompt, problem, solution, steps, explanation, isTeX } =
     generators()[randInt(generators().length)]();
   if (solution === '') solution = '0';
 
+  let separator = '`';
+  if (isTeX) {
+    separator = '$$';
+  }
+
   document.getElementById('prompt')!.innerHTML = prompt;
-  document.getElementById('problem')!.innerHTML = '`' + problem + ' = `';
-  document.getElementById('solution')!.innerHTML = '`' + solution + '`';
-  document.getElementById('explanation')!.innerHTML = '`' + explanation + '`';
+  document.getElementById('problem')!.innerHTML =
+    separator + problem + ' = ' + separator;
+  document.getElementById('solution')!.innerHTML =
+    separator + solution + separator;
+  document.getElementById('explanation')!.innerHTML =
+    separator + explanation + separator;
 
   document.getElementById('showNextStep')!.classList.add('hidden');
   if (steps) {
     steps = filterDuplicateSteps(steps, problem, solution);
     for (let step of steps) {
       if (step.includes('<hidden>')) {
-        const content =
-          '<div class="p-2 md:p-4">`' +
-          step.replace('<hidden>', '') +
-          ' = `</div>';
+        const content = `<div class="p-2 md:p-4">${separator}${step.replace(
+          '<hidden>',
+          '',
+        )} = ${separator}</div>`;
         const lastChild = document.getElementById('steps')!.lastElementChild;
         if (lastChild && lastChild.tagName === 'DETAILS')
           lastChild.innerHTML += content;
@@ -79,7 +87,7 @@ async function renderRandom(seed: string | null = null) {
             `<details class="hidden"><summary class="text-sm text-gray-500 cursor-pointer select-none">show intermediate step</summary>${content}</details>`;
       } else {
         document.getElementById('steps')!.innerHTML +=
-          '<div class="hidden">`' + step + ' = `</div>';
+          `<div class="hidden">${separator}${step} = ${separator}</div>`;
         document.getElementById('showNextStep')!.classList.remove('hidden');
       }
     }

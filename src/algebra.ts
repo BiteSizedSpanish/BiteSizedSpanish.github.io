@@ -11,6 +11,7 @@ export class Term {
   }
 
   static one = new Term(1, '');
+  static zero = new Term(0, '');
 
   static generateSingleValue(positive = false) {
     if (randInt(3) == 0)
@@ -138,6 +139,24 @@ export class Term {
 
   negative() {
     return new Term(-this.factor, this.variables);
+  }
+
+  sign(s: string) {
+    if (s == '-') {
+      return this.negative();
+    }
+    return this;
+  }
+
+  derive(variable: string) {
+    const power = this.variables.split('').filter((v) => v == variable).length;
+    if (power == 0) {
+      return Term.zero;
+    }
+    return new Term(
+      this.factor * power,
+      this.variables.replaceAll(variable, '') + variable.repeat(power - 1),
+    );
   }
 
   lcm(term: Term) {
@@ -308,6 +327,14 @@ export class TermSum {
     return result;
   }
 
+  derive(variable: string) {
+    const result = new TermSum();
+    for (let term of this.terms) {
+      result.push(term.derive(variable));
+    }
+    return result;
+  }
+
   isZero() {
     return this.terms.length == 0;
   }
@@ -456,5 +483,145 @@ export class Power {
       return `${this.base.render()}`;
     }
     return `${this.base.renderAsBase()}^(${this.exponent.render()})`;
+  }
+}
+
+export class Matrix {
+  public rows: TermSum[][];
+  constructor(rows_: (TermSum | Term)[][]) {
+    this.rows = rows_.map((row) =>
+      row.map((term) => {
+        if (term instanceof Term) {
+          return new TermSum([term]);
+        }
+        return term;
+      }),
+    );
+  }
+
+  static generate(w: number, h: number, termGenerator: () => TermSum | Term) {
+    const rows = [];
+    for (let i = 0; i < h; i++) {
+      rows.push(new Array(w).fill(0).map(() => termGenerator()));
+    }
+    return new Matrix(rows);
+  }
+
+  width() {
+    return this.rows[0].length;
+  }
+
+  height() {
+    return this.rows.length;
+  }
+
+  isVector() {
+    return this.width() == 1;
+  }
+
+  scale(scalar: Term) {
+    return new Matrix(
+      this.rows.map((row) => row.map((term) => term.multiplyTerm(scalar))),
+    );
+  }
+
+  add(matrix: Matrix) {
+    if (this.width() != matrix.width() || this.height() != matrix.height()) {
+      console.error('matrix addition for invalid matrices', this, matrix);
+      return null;
+    }
+
+    return new Matrix(
+      this.rows.map((row, i) =>
+        row.map((term, j) => term.add(matrix.rows[i][j])),
+      ),
+    );
+  }
+
+  dot(matrix: Matrix) {
+    if (
+      !this.isVector() ||
+      !matrix.isVector() ||
+      this.height() != matrix.height()
+    ) {
+      console.error('dot product for invalid vectors', this, matrix);
+      return null;
+    }
+
+    return this.rows.reduce(
+      (acc, row, i) => acc.add(row[0].multiply(matrix.rows[i][0])),
+      new TermSum(),
+    );
+  }
+
+  cross(matrix: Matrix) {
+    if (
+      !this.isVector() ||
+      !matrix.isVector() ||
+      this.height() != 3 ||
+      matrix.height() != 3
+    ) {
+      console.error('cross product for invalid vectors', this, matrix);
+      return null;
+    }
+
+    const a = this.rows[0][0];
+    const b = this.rows[1][0];
+    const c = this.rows[2][0];
+    const x = matrix.rows[0][0];
+    const y = matrix.rows[1][0];
+    const z = matrix.rows[2][0];
+
+    return new Matrix([
+      [b.multiply(z).add(c.multiply(y).negative())],
+      [c.multiply(x).add(a.multiply(z).negative())],
+      [a.multiply(y).add(b.multiply(x).negative())],
+    ]);
+  }
+
+  multiply(matrix: Matrix) {
+    if (this.width() != matrix.height()) {
+      console.error('matrix multiplication for invalid matrices', this, matrix);
+      return null;
+    }
+
+    const result = Matrix.generate(matrix.width(), this.height(), () => new TermSum([]));
+
+    for (let i = 0; i < this.height(); i++) {
+      for (let j = 0; j < matrix.width(); j++) {
+        for (let k = 0; k < this.width(); k++) {
+          result.rows[i][j] = result.rows[i][j].add(
+            this.rows[i][k].multiply(matrix.rows[k][j]),
+          );
+        }
+      }
+    }
+
+    return result;
+  }
+
+  simplify() {
+    return new Matrix(
+      this.rows.map((row) => row.map((term) => term.simplify())),
+    );
+  }
+
+  renderTeX() {
+    if (this.rows.length === 1 && this.rows[0].length === 1) {
+      return this.rows[0][0].render();
+    }
+    return (
+      '\\begin{pmatrix}' +
+      this.rows
+        .map((row) => {
+          return row
+            .map((term) => {
+              return term.render();
+            })
+            .join(' & ');
+        })
+        .join(' \\\\ ') +
+      '\\end{pmatrix}'
+    );
   }
 }
