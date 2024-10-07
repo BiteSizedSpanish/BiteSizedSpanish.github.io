@@ -1,4 +1,4 @@
-import { initRandom, randInt } from './randutils.js';
+import { getProblemId, initRandom, randInt } from './randutils.js';
 import {
   generators,
   getSelectedCategories,
@@ -44,8 +44,8 @@ function filterDuplicateSteps(
   return filtered;
 }
 
-async function renderRandom(seed: string | null = null) {
-  initRandom(seed);
+async function renderRandom() {
+  initRandom();
 
   if (generators().length == 0) {
     document.getElementById('prompt')!.innerHTML = 'No categories selected';
@@ -93,6 +93,10 @@ async function renderRandom(seed: string | null = null) {
     }
   }
 
+  document.getElementById('problemId')!.innerHTML = `Problem ID: ${getProblemId()}`;
+  document.getElementById('ghIssueLink')!.setAttribute('href', `https://github.com/BiteSizedMath/BiteSizedMath.github.io/issues/new?title=${encodeURIComponent(`Problem ID: ${getProblemId()}`)}`);
+  document.getElementById('mailToLink')!.setAttribute('href', `mailto:bergmannmatthias1+bitesizedmath@gmail.com?subject=${encodeURIComponent(`Problem ID: ${getProblemId()}`)}`);
+
   await window.MathJax.typesetPromise();
 }
 
@@ -135,7 +139,7 @@ window.showAllSteps = () => {
 window.initTrainer = () => {
   initSettings();
   refreshStats();
-  renderRandom(new URLSearchParams(window.location.search).get('p'));
+  renderRandom();
 };
 
 function initSettings() {

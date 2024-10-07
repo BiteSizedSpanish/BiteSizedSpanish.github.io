@@ -1,4 +1,4 @@
-import { onlyUseX } from './generators/problemgenerators.js';
+import { getSelectedCategories, onlyUseX } from './generators/problemgenerators.js';
 
 ////////  randomness courtesy of bryc https://stackoverflow.com/a/47593316 /////////
 function cyrb128(str: string) {
@@ -66,20 +66,22 @@ export function shuffledArray(len: number) {
   return array;
 }
 let rand = sfc32(0, 0, 0, 0);
-let randSeed = '';
 let shuffled: number[][] = [];
 
-export function initRandom(p: string | null = null) {
-  if (!p) {
-    const url = new URL(window.location.href);
-    p = randomStr(8, Math.random);
-    if (onlyUseX()) p = 'x_' + p;
-    url.searchParams.set('p', p);
-    window.history.pushState(p, document.title, url.toString());
-  }
+let problemId: string = '';
 
-  randSeed = p;
-  var sfcSeed = cyrb128(p);
+export function generateProblemId() {
+  problemId = randomStr(8, Math.random) + ':' + getSelectedCategories();
+  if (onlyUseX()) problemId = 'x_' + problemId;
+}
+
+export function getProblemId() {
+  return problemId;
+}
+
+export function initRandom() {
+  generateProblemId();
+  var sfcSeed = cyrb128(problemId);
   rand = sfc32(sfcSeed[0], sfcSeed[1], sfcSeed[2], sfcSeed[3]);
 
   shuffled = [];
@@ -108,7 +110,7 @@ export function operation(seed: number | null = null) {
 }
 
 export function randVariable(seed: number | null = null) {
-  if (randSeed.startsWith('x_')) {
+  if (problemId.startsWith('x_')) {
     return 'x';
   }
   return pickRandomUnique(['a', 'b', 'c', 'x', 'y', 'z'], seed ?? randInt(6));

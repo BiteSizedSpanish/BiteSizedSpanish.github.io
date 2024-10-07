@@ -13,7 +13,9 @@
 
     <script>
       MathJax = {
-        loader: { load: ['input/tex', 'input/asciimath', 'output/chtml', 'ui/menu'] },
+        loader: {
+          load: ['input/tex', 'input/asciimath', 'output/chtml', 'ui/menu'],
+        },
         startup: {
           ready: () => {
             MathJax.startup.defaultReady();
@@ -141,6 +143,8 @@
         placeholder="Notes"
         onclick="event.stopPropagation()"
         class="min-h-40 w-full rounded-lg border bg-black p-2 text-base"></textarea>
+
+      <div id="problemId" class="text-start text-gray-500"></div>
     </div>
 
     <div class="w-full pb-4 pt-12">
@@ -151,12 +155,14 @@
       <div>
         Want to report an issue or request a feature?
         <a
+          id="ghIssueLink"
           href="https://github.com/BiteSizedMath/BiteSizedMath.github.io/issues"
           class="underline">
           Click here</a
         >
         or
         <a
+          id="mailToLink"
           href="mailto:bergmannmatthias1+bitesizedmath@gmail.com"
           class="underline">
           send me an email</a
