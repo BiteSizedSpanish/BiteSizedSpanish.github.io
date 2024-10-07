@@ -42,7 +42,7 @@ export function crossProduct(): GeneratorResult {
     prompt: `Simplify`,
     problem: `${v1.renderTeX()} \\times ${v2.renderTeX()}`,
     solution: `${v1.cross(v2)!.simplify().renderTeX()}`,
-    explanation: `\\begin{pmatrix}a \\\\ b \\\\ c \\end{pmatrix} \\cdot \\begin{pmatrix}x \\\\ y \\\\ z \\end{pmatrix} = \\begin{pmatrix}bz - cy \\\\ cx - az \\\\ ay - bx \\end{pmatrix}`,
+    explanation: `\\begin{pmatrix}a \\\\ b \\\\ c \\end{pmatrix} \\times \\begin{pmatrix}x \\\\ y \\\\ z \\end{pmatrix} = \\begin{pmatrix}bz - cy \\\\ cx - az \\\\ ay - bx \\end{pmatrix}`,
     steps: [`${v1.cross(v2)!.renderTeX()}`],
     isTeX: true,
   };
