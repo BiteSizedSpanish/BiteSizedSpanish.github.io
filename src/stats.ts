@@ -26,12 +26,12 @@ export function getStats() {
 }
 
 function cat() {
-  const urlValuue = new URLSearchParams(window.location.search).get('cat');
-  if (urlValuue) {
-    cookiesSetSafe('cat', urlValuue, { sameSite: 'strict', expires: 10000 });
+  const urlValue = new URLSearchParams(window.location.search).get('cat');
+  if (urlValue) {
+    cookiesSetSafe('cat', urlValue, { sameSite: 'strict', expires: 10000 });
   }
   const n = parseInt(Cookies.get('cat') ?? '0');
-  if (n > 0 && parseInt(Cookies.get('solvedTodayCorrect') ?? '0') % n == 0) {
+  if (n > 0 && parseInt(Cookies.get('solvedTodayCorrect') ?? '0') % n == 0 && parseInt(Cookies.get('solvedTodayCorrect') ?? '0') > 0) {
     window.location.href = './cat.html';
   }
 }
