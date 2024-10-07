@@ -585,7 +585,11 @@ export class Matrix {
       return null;
     }
 
-    const result = Matrix.generate(matrix.width(), this.height(), () => new TermSum([]));
+    const result = Matrix.generate(
+      matrix.width(),
+      this.height(),
+      () => new TermSum([]),
+    );
 
     for (let i = 0; i < this.height(); i++) {
       for (let j = 0; j < matrix.width(); j++) {
@@ -623,5 +627,83 @@ export class Matrix {
         .join(' \\\\ ') +
       '\\end{pmatrix}'
     );
+  }
+}
+
+export enum Function {
+  sin = 'sin',
+  cos = 'cos',
+  ln = 'ln',
+  exp = 'e^',
+}
+
+export class Derivable {
+  constructor(
+    public factor: number,
+    public f: Function,
+    public arg: Term | Derivable,
+  ) {}
+
+  static sin(term: Term | Derivable = new Term(1, 'x')) {
+    return new Derivable(1, Function.sin, term);
+  }
+
+  static cos(term: Term | Derivable = new Term(1, 'x')) {
+    return new Derivable(1, Function.cos, term);
+  }
+
+  static ln(term: Term | Derivable = new Term(1, 'x')) {
+    return new Derivable(1, Function.ln, term);
+  }
+
+  static exp(term: Term | Derivable = new Term(1, 'x')) {
+    return new Derivable(1, Function.exp, term);
+  }
+
+  static generate(term: Term | Derivable = new Term(1, 'x')) {
+    switch (randInt(4)) {
+      case 0:
+        return Derivable.sin(term);
+      case 1:
+        return Derivable.cos(term);
+      case 2:
+        return Derivable.ln(term);
+      case 3:
+        return Derivable.exp(term);
+    }
+    return Derivable.sin(term);
+  }
+
+  render(): string {
+    return `${this.f}(${this.arg.render()})`;
+  }
+
+  derive(v: string): string {
+    let result = '';
+
+    switch(this.f) {
+      case Function.sin:
+        result += `cos(${this.arg.render()})`;
+        break;
+      case Function.cos:
+        result += `-sin(${this.arg.render()})`;
+        break;
+      case Function.ln:
+        result += `1 / (${this.arg.render()})`;
+        break;
+      case Function.exp:
+        result += `e^(${this.arg.render()})`;
+        break;
+    }
+
+    if (this.arg instanceof Derivable) {
+      if (this.arg.derive(v) === '0') return '0';
+      if (this.arg.derive(v) === '1') return result;
+      return `${result} * ${this.arg.derive(v)}`;
+    }
+
+    if (this.arg.derive(v).isZero()) return '0';
+    if (this.arg.derive(v).isOne()) return result;
+    return `${result} * ${this.arg.derive(v).renderAsFactor()}`;
   }
 }

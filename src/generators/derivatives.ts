@@ -1,5 +1,5 @@
 import { nonZero, randInt } from '../randutils.js';
-import { Term, TermSum } from '../algebra.js';
+import { Derivable, Term, TermSum } from '../algebra.js';
 import { GeneratorResult } from './problemgenerators.js';
 
 export function generateDeriveTermSum(): GeneratorResult {
@@ -20,7 +20,7 @@ export function generateDeriveTermSum(): GeneratorResult {
 }
 
 export function generateDeriveCommonFunctions(): GeneratorResult {
-const v = 'x';
+  const v = 'x';
   const options = [
     {
       problem: `sin(${v})`,
@@ -53,4 +53,29 @@ const v = 'x';
     explanation: `${option.explanation}`,
     steps: [],
   };
+}
+
+export function chainRule1(): GeneratorResult {
+  const f = Derivable.generate(new Term(nonZero(-3, 3), 'x'));
+
+  return {
+    prompt: `Derive`,
+    problem: `d/dx ${f.render()}`,
+    solution: `${f.derive('x')}`,
+    explanation: `d/dx f(g(x)) = f'(g(x)) * g'(x)`,
+    steps: [],
+  }
+}
+
+export function chainRule2(): GeneratorResult {
+  const g = Derivable.generate(new Term(nonZero(-3, 3), 'x'));
+  const f = Derivable.generate(g);
+
+  return {
+    prompt: `Derive`,
+    problem: `d/dx ${f.render()}`,
+    solution: `${f.derive('x')}`,
+    explanation: `d/dx f(g(x)) = f'(g(x)) * g'(x)`,
+    steps: [],
+  }
 }
