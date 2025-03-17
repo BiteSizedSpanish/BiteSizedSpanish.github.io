@@ -52,13 +52,13 @@ async function renderRandom() {
     .getElementById('ghIssueLink')!
     .setAttribute(
       'href',
-      `https://github.com/BiteSizedMath/BiteSizedMath.github.io/issues/new?title=${encodeURIComponent(`Problem ID: ${getProblemId()}`)}`,
+      `https://github.com/BiteSizedSpanish/BiteSizedSpanish.github.io/issues/new?title=${encodeURIComponent(`Problem ID: ${getProblemId()}`)}`,
     );
   document
     .getElementById('mailToLink')!
     .setAttribute(
       'href',
-      `mailto:bergmannmatthias1+bitesizedmath@gmail.com?subject=${encodeURIComponent(`Problem ID: ${getProblemId()}`)}`,
+      `mailto:bergmannmatthias1+bitesizedspanish@gmail.com?subject=${encodeURIComponent(`Problem ID: ${getProblemId()}`)}`,
     );
 }
 
