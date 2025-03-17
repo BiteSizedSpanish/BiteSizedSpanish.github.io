@@ -1,4 +1,4 @@
-import { getSelectedCategories, onlyUseX } from './generators/problemgenerators.js';
+import { getSelectedCategories } from './generators/problemgenerators.js';
 
 ////////  randomness courtesy of bryc https://stackoverflow.com/a/47593316 /////////
 function cyrb128(str: string) {
@@ -72,7 +72,6 @@ let problemId: string = '';
 
 export function generateProblemId() {
   problemId = randomStr(8, Math.random) + ':' + getSelectedCategories();
-  if (onlyUseX()) problemId = 'x_' + problemId;
 }
 
 export function getProblemId() {

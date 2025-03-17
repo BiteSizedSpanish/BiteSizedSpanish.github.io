@@ -1,30 +1,47 @@
 import { cookiesSetSafe } from '../stats.js';
-import * as addition from './addition.js';
-import * as binomials from './binomials.js';
-import * as fractions from './fractions.js';
-import * as multiplication from './multiplication.js';
-import * as powers from './powers.js';
-import * as derivatives from './derivatives.js';
-import * as vectors from './vectors.js';
 import Cookies from 'js-cookie';
+import {
+  generateCondicional,
+  generateCondicionalPerfecto,
+  generateFuturo,
+  generateFuturoPerfecto,
+  generateImperativoAfirmativo,
+  generateImperfecto,
+  generatePluscuamperfecto,
+  generatePresente,
+  generatePresentePerfecto,
+  generatePreterito,
+  generatePreteritoAnterior,
+} from './verbgenerator.js';
 
 export type GeneratorResult = {
-  prompt: string;
-  explanation: string;
-  problem: string;
-  steps: string[];
-  solution: string;
-  isTeX?: boolean;
+  tense: string;
+  form: string;
+  verb: string;
+  conjugation: string;
+  english: string;
+  table: string[];
 };
 
 export const generatorConfig = {
-  a: { generators: addition, name: 'Addition and Subtraction' },
-  m: { generators: multiplication, name: 'Multiplication' },
-  b: { generators: binomials, name: 'Binomial Formulas' },
-  f: { generators: fractions, name: 'Fractions' },
-  p: { generators: powers, name: 'Powers and Exponents' },
-  d: { generators: derivatives, name: 'Derivatives' },
-  v: { generators: vectors, name: 'Vectors and Matrices' },
+  a: { generators: [generatePresente], name: 'Presente' },
+  b: { generators: [generateFuturo], name: 'Futuro' },
+  c: { generators: [generateImperfecto], name: 'Imperfecto' },
+  d: { generators: [generatePreterito], name: 'Pretérito' },
+  e: { generators: [generateCondicional], name: 'Condicional' },
+  f: { generators: [generatePresentePerfecto], name: 'Presente perfecto' },
+  g: { generators: [generateFuturoPerfecto], name: 'Futuro perfecto' },
+  h: { generators: [generatePluscuamperfecto], name: 'Pluscuamperfecto' },
+  i: { generators: [generatePreteritoAnterior], name: 'Pretérito anterior' },
+  j: {
+    generators: [generateCondicionalPerfecto],
+    name: 'Condicional perfecto',
+  },
+  k: {
+    generators: [generateImperativoAfirmativo],
+    name: 'Imperativo afirmativo',
+  },
+  v: { generators: [], name: 'Include vosotros' },
 };
 
 export function generators() {
@@ -53,7 +70,7 @@ initFilter();
 export function getSelectedCategories() {
   let filter = new Set();
   for (let key of (
-    Cookies.get('filter') ?? Object.keys(generatorConfig).join('')
+    Cookies.get('filter') ?? 'abcv'
   ).split('')) {
     if (Object.keys(generatorConfig).includes(key)) filter.add(key);
   }
@@ -65,15 +82,4 @@ export function setSelectedCategories(categories: string) {
   const url = new URL(window.location.href);
   url.searchParams.set('filter', getSelectedCategories());
   window.history.replaceState(getSelectedCategories(), '', url.toString());
-}
-
-export function onlyUseX() {
-  return (Cookies.get('useVariables') ?? 'x') === 'x';
-}
-
-export function setOnlyUseX(useX: boolean) {
-  cookiesSetSafe('useVariables', useX ? 'x' : 'abcxyz', {
-    sameSite: 'strict',
-    expires: 10000,
-  });
 }

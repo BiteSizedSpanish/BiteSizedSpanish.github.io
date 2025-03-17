@@ -4,16 +4,14 @@ import {
   getSelectedCategories,
   setSelectedCategories,
   generatorConfig,
-  onlyUseX,
-  setOnlyUseX,
 } from './generators/problemgenerators.js';
 import { getStats, recordPlayed } from './stats.js';
 import Cookies from 'js-cookie';
+import { loadVerbs } from './verbs.js';
 
 declare global {
   interface Window {
     newProblem: (wasCorrect: boolean) => void;
-    showNextStep: () => void;
     showAllSteps: () => void;
     initTrainer: () => void;
     saveSettings: () => void;
@@ -23,122 +21,72 @@ declare global {
   }
 }
 
-let step = 0;
-
-function filterDuplicateSteps(
-  steps: string[],
-  problem: string,
-  solution: string,
-) {
-  problem = problem.trim().replaceAll(' ', '');
-  solution = solution.trim().replaceAll(' ', '');
-  let filtered = [];
-  let prevStepTrimmed = null;
-  for (let step of steps) {
-    const trimmedStep = step.replace('<hidden>', '').trim().replaceAll(' ', '');
-    if (trimmedStep === problem || trimmedStep === solution) continue;
-    if (prevStepTrimmed === trimmedStep) continue;
-    prevStepTrimmed = trimmedStep;
-    filtered.push(step);
-  }
-  return filtered;
-}
-
 async function renderRandom() {
   initRandom();
 
   if (generators().length == 0) {
-    document.getElementById('prompt')!.innerHTML = 'No categories selected';
-    document.getElementById('problem')!.innerHTML = '';
+    document.getElementById('verb')!.innerHTML = 'No categories selected';
     return;
   }
 
-  let { prompt, problem, solution, steps, explanation, isTeX } =
+  let { tense, form, verb, conjugation, english, table } =
     generators()[randInt(generators().length)]();
-  if (solution === '') solution = '0';
 
-  let separator = '`';
-  if (isTeX) {
-    separator = '$$';
-  }
+  document.getElementById('verb')!.innerHTML = verb;
+  document.getElementById('tense')!.innerHTML = tense;
+  document.getElementById('form')!.innerHTML = form;
+  document.getElementById('conjugation')!.innerHTML = conjugation;
+  document.getElementById('english')!.innerHTML = english;
 
-  document.getElementById('prompt')!.innerHTML = prompt;
-  document.getElementById('problem')!.innerHTML =
-    separator + problem + ' = ' + separator;
-  document.getElementById('solution')!.innerHTML =
-    separator + solution + separator;
-  document.getElementById('explanation')!.innerHTML =
-    separator + explanation + separator;
+  document.getElementById('table_verb')!.innerHTML = verb;
+  document.getElementById('table_1s')!.innerHTML = table[0];
+  document.getElementById('table_2s')!.innerHTML = table[1];
+  document.getElementById('table_3s')!.innerHTML = table[2];
+  document.getElementById('table_1p')!.innerHTML = table[3];
+  document.getElementById('table_2p')!.innerHTML = table[4];
+  document.getElementById('table_3p')!.innerHTML = table[5];
 
-  document.getElementById('showNextStep')!.classList.add('hidden');
-  if (steps) {
-    steps = filterDuplicateSteps(steps, problem, solution);
-    for (let step of steps) {
-      if (step.includes('<hidden>')) {
-        const content = `<div class="p-2 md:p-4">${separator}${step.replace(
-          '<hidden>',
-          '',
-        )} = ${separator}</div>`;
-        const lastChild = document.getElementById('steps')!.lastElementChild;
-        if (lastChild && lastChild.tagName === 'DETAILS')
-          lastChild.innerHTML += content;
-        else
-          document.getElementById('steps')!.innerHTML +=
-            `<details class="hidden"><summary class="text-sm text-gray-500 cursor-pointer select-none">show intermediate step</summary>${content}</details>`;
-      } else {
-        document.getElementById('steps')!.innerHTML +=
-          `<div class="hidden">${separator}${step} = ${separator}</div>`;
-        document.getElementById('showNextStep')!.classList.remove('hidden');
-      }
-    }
-  }
-
-  document.getElementById('problemId')!.innerHTML = `Problem ID: ${getProblemId()}`;
-  document.getElementById('ghIssueLink')!.setAttribute('href', `https://github.com/BiteSizedMath/BiteSizedMath.github.io/issues/new?title=${encodeURIComponent(`Problem ID: ${getProblemId()}`)}`);
-  document.getElementById('mailToLink')!.setAttribute('href', `mailto:bergmannmatthias1+bitesizedmath@gmail.com?subject=${encodeURIComponent(`Problem ID: ${getProblemId()}`)}`);
-
-  await window.MathJax.typesetPromise();
+  document.getElementById('problemId')!.innerHTML =
+    `Problem ID: ${getProblemId()}`;
+  document
+    .getElementById('ghIssueLink')!
+    .setAttribute(
+      'href',
+      `https://github.com/BiteSizedMath/BiteSizedMath.github.io/issues/new?title=${encodeURIComponent(`Problem ID: ${getProblemId()}`)}`,
+    );
+  document
+    .getElementById('mailToLink')!
+    .setAttribute(
+      'href',
+      `mailto:bergmannmatthias1+bitesizedmath@gmail.com?subject=${encodeURIComponent(`Problem ID: ${getProblemId()}`)}`,
+    );
 }
 
 window.newProblem = (wasCorrect: boolean) => {
-  step = 0;
-  document.getElementById('steps')!.innerHTML = '';
-  (<HTMLInputElement>document.getElementById('notes')!).value = '';
-  document.getElementById('solution')!.classList.add('hidden');
+  document.getElementById('verb')!.innerHTML = '';
+  document.getElementById('tense')!.innerHTML = '';
+  document.getElementById('form')!.innerHTML = '';
+  document.getElementById('conjugation')!.innerHTML = '';
+  document.getElementById('conjugation')!.classList.add('hidden');
   document.getElementById('next')!.classList.remove('hidden');
   document.getElementById('feedback')!.classList.add('hidden');
+  document.getElementById('forms_table')!.classList.add('hidden');
   recordPlayed(wasCorrect);
   refreshStats();
   renderRandom();
 };
 
-window.showNextStep = () => {
-  if (step > document.getElementById('steps')!.childElementCount) return;
-  step++;
-
-  if (step > document.getElementById('steps')!.childElementCount) {
-    document.getElementById('solution')!.classList.remove('hidden');
-    document.getElementById('next')!.classList.add('hidden');
-    document.getElementById('feedback')!.classList.remove('hidden');
-  } else {
-    document
-      .getElementById('steps')!
-      .children[step - 1].classList.remove('hidden');
-    if (
-      document.getElementById('steps')!.children[step - 1].tagName === 'DETAILS'
-    )
-      window.showNextStep();
-  }
-};
-
 window.showAllSteps = () => {
-  while (step <= document.getElementById('steps')!.childElementCount)
-    window.showNextStep();
+  document.getElementById('conjugation')!.classList.remove('hidden');
+  document.getElementById('next')!.classList.add('hidden');
+  document.getElementById('feedback')!.classList.remove('hidden');
+  document.getElementById('forms_table')!.classList.remove('hidden');
 };
 
-window.initTrainer = () => {
+window.initTrainer = async () => {
   initSettings();
   refreshStats();
+  await loadVerbs();
   renderRandom();
 };
 
@@ -152,11 +100,6 @@ function initSettings() {
         `<label for="setting-cb-${c}">&nbsp;${generatorConfig[c as keyof typeof generatorConfig].name}</label></div>`,
     )
     .join('');
-
-  if (onlyUseX()) {
-    (<HTMLInputElement>document.getElementById('setting-var-x')!).checked =
-      true;
-  }
 }
 
 function refreshStats() {
@@ -177,9 +120,6 @@ window.saveSettings = () => {
     )
     .map((c) => (<HTMLInputElement>c.firstElementChild!).name);
   setSelectedCategories(selectedCategories.join(''));
-  setOnlyUseX(
-    (<HTMLInputElement>document.getElementById('setting-var-x')!).checked,
-  );
 
   window.location.reload();
 };
