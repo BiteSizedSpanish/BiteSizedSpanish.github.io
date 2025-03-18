@@ -39,9 +39,9 @@ async function renderRandom() {
     let form = generated.allForms[el.getAttribute('data-form')!]
     el.innerHTML = form;
     if (form !== regularConjugation(generated.tense, generated.verb, el.getAttribute('data-form')!)) {
-      el.classList.add('text-red-200');
+      el.classList.add('text-red-300');
     } else {
-      el.classList.remove('text-red-200');
+      el.classList.remove('text-red-300');
     }
   });
 

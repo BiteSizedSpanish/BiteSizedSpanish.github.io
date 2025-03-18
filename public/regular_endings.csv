@@ -59,7 +59,9 @@ condicional perfecto,form_3s,habría -ado,habría -ido,habría -ido
 condicional perfecto,form_1p,habríamos -ado,habríamos -ido,habríamos -ido
 condicional perfecto,form_2p,habríais -ado,habríais -ido,habríais -ido
 condicional perfecto,form_3p,habrían -ado,habrían -ido,habrían -ido
-imperativo afirmativo,2s,-a,-e,-e
-imperativo afirmativo,3s,-e,-a,-a
-imperativo afirmativo,2p,-ad,-ed,-id
-imperativo afirmativo,3p,-en,-an,-an
+imperativo afirmativo,form_1s,,,
+imperativo afirmativo,form_2s,-a,-e,-e
+imperativo afirmativo,form_3s,-e,-a,-a
+imperativo afirmativo,form_1p,,,
+imperativo afirmativo,form_2p,-ad,-ed,-id
+imperativo afirmativo,form_3p,-en,-an,-an

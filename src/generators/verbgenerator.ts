@@ -29,7 +29,14 @@ function generateVerb(
     forms = [form_1s, form_2s, form_3s, form_1p, form_3p];
   }
 
-  const form: string = forms[Math.floor(Math.random() * forms.length)];
+  let form_i = Math.floor(Math.random() * forms.length);
+  let form = forms[form_i];
+  // some verb moods do not contain all forms (e.g. imperativo)
+  while (!verb[form]) {
+    form = forms[++form_i % forms.length];
+    if (form_i > 100)
+      throw new Error('No valid forms found for verb');
+  }
 
   return {
     tense: `${verb['tense']}`,
@@ -44,7 +51,7 @@ function generateVerb(
       form_1p: verb[form_1p],
       form_2p: verb[form_2p],
       form_3p: verb[form_3p],
-    }
+    },
   };
 }
 
@@ -80,7 +87,5 @@ export function generateCondicionalPerfecto(): GeneratorResult {
 }
 
 export function generateImperativoAfirmativo(): GeneratorResult {
-  let result = generateVerb('Presente', 'Imperativo Afirmativo');
-  result.tense = 'Imperativo afirmativo';
-  return result;
+  return generateVerb('Imperativo afirmativo', 'Imperativo Afirmativo');
 }
