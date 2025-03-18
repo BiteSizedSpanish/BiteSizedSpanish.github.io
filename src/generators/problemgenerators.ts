@@ -42,6 +42,7 @@ export const generatorConfig = {
     name: 'Imperativo afirmativo',
   },
   v: { generators: [], name: 'Include vosotros' },
+  w: { generators: [], name: 'Only use common verbs' },
 };
 
 export function generators() {
@@ -70,7 +71,7 @@ initFilter();
 export function getSelectedCategories() {
   let filter = new Set();
   for (let key of (
-    Cookies.get('filter') ?? 'abcv'
+    Cookies.get('filter') ?? 'abcvw'
   ).split('')) {
     if (Object.keys(generatorConfig).includes(key)) filter.add(key);
   }

@@ -2,6 +2,7 @@ import Papa from 'papaparse';
 
 let verbs: any = {};
 let endings: any = {};
+let mostCommonVerbs: string[] = [];
 
 export async function loadVerbs(): Promise<unknown> {
   return Promise.all(
@@ -37,6 +38,18 @@ export async function loadVerbs(): Promise<unknown> {
             }
             let pronoun = ending['pronoun'];
             endings[tense][pronoun] = ending;
+          }
+          resolve();
+        },
+      });
+    }),
+    new Promise<void>((resolve) => {
+      Papa.parse('/100verbs.csv', {
+        download: true,
+        header: true,
+        complete: function (results: any) {
+          for (let verb of results.data) {
+            mostCommonVerbs.push(verb['infinitive']);
           }
           resolve();
         },
@@ -101,4 +114,14 @@ export function getRandomVerb(tense: string, mood: string) {
     return undefined;
   }
   return verbs[mood][tense][Math.floor(Math.random() * verbs[mood][tense].length)];
+}
+
+export function getRandomCommonVerb(tense: string, mood: string) {
+  const verb = mostCommonVerbs[Math.floor(Math.random() * mostCommonVerbs.length)];
+
+  for (let v of verbs[mood][tense]) {
+    if (v['infinitive'] === verb) {
+      return v;
+    }
+  }
 }

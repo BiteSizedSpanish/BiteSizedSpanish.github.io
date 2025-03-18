@@ -1,4 +1,4 @@
-import { getRandomVerb } from '../verbs.js';
+import { getRandomCommonVerb, getRandomVerb } from '../verbs.js';
 import { GeneratorResult } from './problemgenerators.js';
 import Cookies from 'js-cookie';
 
@@ -22,7 +22,11 @@ function generateVerb(
   tense: string,
   mood: string = 'Indicativo',
 ): GeneratorResult {
-  const verb: any = getRandomVerb(tense, mood);
+  let verb: any = getRandomCommonVerb(tense, mood);
+  if (!(Cookies.get('filter') ?? '').includes('w')) {
+    verb = getRandomVerb(tense, mood);
+  }
+
 
   let forms = [form_1s, form_2s, form_3s, form_1p, form_2p, form_3p];
   if (!(Cookies.get('filter') ?? '').includes('v')) {
