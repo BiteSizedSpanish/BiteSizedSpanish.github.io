@@ -7,7 +7,7 @@ import {
 } from './generators/problemgenerators.js';
 import { getStats, recordPlayed } from './stats.js';
 import Cookies from 'js-cookie';
-import { getEndings, loadVerbs } from './verbs.js';
+import { getEndings, loadVerbs, regularConjugation } from './verbs.js';
 
 declare global {
   interface Window {
@@ -36,7 +36,13 @@ async function renderRandom() {
   });
 
   document.querySelectorAll('[data-form]').forEach((el) => {
-    el.innerHTML = generated.allForms[el.getAttribute('data-form')!];
+    let form = generated.allForms[el.getAttribute('data-form')!]
+    el.innerHTML = form;
+    if (form !== regularConjugation(generated.tense, generated.verb, el.getAttribute('data-form')!)) {
+      el.classList.add('text-red-200');
+    } else {
+      el.classList.remove('text-red-200');
+    }
   });
 
   document.querySelectorAll('[data-form-ending]').forEach((el) => {

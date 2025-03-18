@@ -50,6 +50,17 @@ export function getVerbs() {
   return verbs;
 }
 
+export function regularConjugation(tense: string, verb: string, pronoun: string) {
+  tense = tense.toLocaleLowerCase();
+  verb = verb.toLocaleLowerCase();
+  pronoun = pronoun.toLocaleLowerCase();
+
+  let endings = getEndings(tense, verb);
+  let stem = verb.endsWith('se') ? verb.slice(0, -4) : verb.slice(0, -2);
+
+  return endings[pronoun].replace('-', stem);
+}
+
 export function getEndings(tense: string, verb: string): { [key: string]: string } {
   tense = tense.toLocaleLowerCase();
   verb = verb.toLocaleLowerCase();
