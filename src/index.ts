@@ -4,6 +4,7 @@ import {
   getSelectedCategories,
   setSelectedCategories,
   generatorConfig,
+  genericSettings,
 } from './generators/problemgenerators.js';
 import { getStats, recordPlayed } from './stats.js';
 import Cookies from 'js-cookie';
@@ -25,7 +26,8 @@ async function renderRandom() {
   initRandom();
 
   if (generators().length == 0) {
-    document.querySelector('[data-generated="verb"]')!.innerHTML = 'No categories selected';
+    document.querySelector('[data-generated="verb"]')!.innerHTML =
+      'No categories selected';
     return;
   }
 
@@ -36,9 +38,16 @@ async function renderRandom() {
   });
 
   document.querySelectorAll('[data-form]').forEach((el) => {
-    let form = generated.allForms[el.getAttribute('data-form')!]
+    let form = generated.allForms[el.getAttribute('data-form')!];
     el.innerHTML = form;
-    if (form !== regularConjugation(generated.tense, generated.verb, el.getAttribute('data-form')!)) {
+    if (
+      form !==
+      regularConjugation(
+        generated.tense,
+        generated.verb,
+        el.getAttribute('data-form')!,
+      )
+    ) {
       el.classList.add('text-red-300');
     } else {
       el.classList.remove('text-red-300');
@@ -46,7 +55,9 @@ async function renderRandom() {
   });
 
   document.querySelectorAll('[data-form-ending]').forEach((el) => {
-    el.innerHTML = getEndings(generated.tense, generated.verb)[el.getAttribute('data-form-ending')!];
+    el.innerHTML = getEndings(generated.tense, generated.verb)[
+      el.getAttribute('data-form-ending')!
+    ];
   });
 
   document.getElementById('problemId')!.innerHTML =
@@ -91,15 +102,22 @@ window.initTrainer = async () => {
 };
 
 function initSettings() {
-  document.getElementById('settings')!.children[1].innerHTML = Object.keys(
-    generatorConfig,
-  )
-    .map(
-      (c) =>
-        `<div><input type="checkbox" id="setting-cb-${c}" name="${c}" ${getSelectedCategories().includes(c) ? 'checked' : ''} class="accent-black">` +
-        `<label for="setting-cb-${c}">&nbsp;${generatorConfig[c as keyof typeof generatorConfig].name}</label></div>`,
-    )
-    .join('');
+  document.getElementById('settings')!.children[1].innerHTML =
+    Object.keys(genericSettings)
+      .map(
+        (c) =>
+          `<div><input type="checkbox" id="setting-cb-${c}" name="${c}" ${getSelectedCategories().includes(c) ? 'checked' : ''} class="accent-black">` +
+          `<label for="setting-cb-${c}">&nbsp;${genericSettings[c as keyof typeof genericSettings].name}</label></div>`,
+      )
+      .join('') +
+    '<hr>' +
+    Object.keys(generatorConfig)
+      .map(
+        (c) =>
+          `<div><input type="checkbox" id="setting-cb-${c}" name="${c}" ${getSelectedCategories().includes(c) ? 'checked' : ''} class="accent-black">` +
+          `<label for="setting-cb-${c}">&nbsp;${generatorConfig[c as keyof typeof generatorConfig].name}</label></div>`,
+      )
+      .join('');
 }
 
 function refreshStats() {
@@ -115,6 +133,7 @@ window.saveSettings = () => {
   )
     .filter(
       (c) =>
+        c.firstElementChild &&
         (<HTMLInputElement>c.firstElementChild!).type === 'checkbox' &&
         (<HTMLInputElement>c.firstElementChild!).checked,
     )
