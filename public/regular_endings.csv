@@ -1,0 +1,65 @@
+tense,pronoun,ar,er,ir
+presente,form_1s,-o,-o,-o
+presente,form_2s,-as,-es,-es
+presente,form_3s,-a,-e,-e
+presente,form_1p,-amos,-emos,-imos
+presente,form_2p,-áis,-éis,-ís
+presente,form_3p,-an,-en,-en
+futuro,form_1s,-aré,-eré,-iré
+futuro,form_2s,-arás,-erás,-irás
+futuro,form_3s,-ará,-erá,-irá
+futuro,form_1p,-aremos,-eremos,-iremos
+futuro,form_2p,-aréis,-eréis,-iréis
+futuro,form_3p,-arán,-erán,-irán
+imperfecto,form_1s,-aba,-ía,-ía
+imperfecto,form_2s,-abas,-ías,-ías
+imperfecto,form_3s,-aba,-ía,-ía
+imperfecto,form_1p,-ábamos,-íamos,-íamos
+imperfecto,form_2p,-abais,-íais,-íais
+imperfecto,form_3p,-aban,-ían,-ían
+pretérito,form_1s,-é,-í,-í
+pretérito,form_2s,-aste,-iste,-iste
+pretérito,form_3s,-ó,-ió,-ió
+pretérito,form_1p,-amos,-imos,-imos
+pretérito,form_2p,-asteis,-isteis,-isteis
+pretérito,form_3p,-aron,-ieron,-ieron
+condicional,form_1s,-aría,-ería,-iría
+condicional,form_2s,-arías,-erías,-irías
+condicional,form_3s,-aría,-ería,-iría
+condicional,form_1p,-aríamos,-eríamos,-iríamos
+condicional,form_2p,-aríais,-eríais,-iríais
+condicional,form_3p,-arían,-erían,-irían
+presente perfecto,form_1s,he -ado,he -ido,he -ido
+presente perfecto,form_2s,has -ado,has -ido,has -ido
+presente perfecto,form_3s,ha -ado,ha -ido,ha -ido
+presente perfecto,form_1p,hemos -ado,hemos -ido,hemos -ido
+presente perfecto,form_2p,habéis -ado,habéis -ido,habéis -ido
+presente perfecto,form_3p,han -ado,han -ido,han -ido
+futuro perfecto,form_1s,habré -ado,habré -ido,habré -ido
+futuro perfecto,form_2s,habrás -ado,habrás -ido,habrás -ido
+futuro perfecto,form_3s,habrá -ado,habrá -ido,habrá -ido
+futuro perfecto,form_1p,habremos -ado,habremos -ido,habremos -ido
+futuro perfecto,form_2p,habréis -ado,habréis -ido,habréis -ido
+futuro perfecto,form_3p,habrán -ado,habrán -ido,habrán -ido
+pluscuamperfecto,form_1s,había -ado,había -ido,había -ido
+pluscuamperfecto,form_2s,habías -ado,habías -ido,habías -ido
+pluscuamperfecto,form_3s,había -ado,había -ido,había -ido
+pluscuamperfecto,form_1p,habíamos -ado,habíamos -ido,habíamos -ido
+pluscuamperfecto,form_2p,habíais -ado,habíais -ido,habíais -ido
+pluscuamperfecto,form_3p,habían -ado,habían -ido,habían -ido
+pretérito anterior,form_1s,hube -ado,hube -ido,hube -ido
+pretérito anterior,form_2s,hubiste -ado,hubiste -ido,hubiste -ido
+pretérito anterior,form_3s,hubo -ado,hubo -ido,hubo -ido
+pretérito anterior,form_1p,hubimos -ado,hubimos -ido,hubimos -ido
+pretérito anterior,form_2p,hubisteis -ado,hubisteis -ido,hubisteis -ido
+pretérito anterior,form_3p,hubieron -ado,hubieron -ido,hubieron -ido
+condicional perfecto,form_1s,habría -ado,habría -ido,habría -ido
+condicional perfecto,form_2s,habrías -ado,habrías -ido,habrías -ido
+condicional perfecto,form_3s,habría -ado,habría -ido,habría -ido
+condicional perfecto,form_1p,habríamos -ado,habríamos -ido,habríamos -ido
+condicional perfecto,form_2p,habríais -ado,habríais -ido,habríais -ido
+condicional perfecto,form_3p,habrían -ado,habrían -ido,habrían -ido
+imperativo afirmativo,2s,-a,-e,-e
+imperativo afirmativo,3s,-e,-a,-a
+imperativo afirmativo,2p,-ad,-ed,-id
+imperativo afirmativo,3p,-en,-an,-an

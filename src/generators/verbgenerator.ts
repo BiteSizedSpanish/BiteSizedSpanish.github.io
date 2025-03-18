@@ -37,14 +37,14 @@ function generateVerb(
     verb: `${verb['infinitive']}`,
     conjugation: `${verb[form]}`,
     english: `${verb['infinitive_english'].split(';')[0]}`,
-    table: [
-      verb[form_1s],
-      verb[form_2s],
-      verb[form_3s],
-      verb[form_1p],
-      verb[form_2p],
-      verb[form_3p],
-    ],
+    allForms: {
+      form_1s: verb[form_1s],
+      form_2s: verb[form_2s],
+      form_3s: verb[form_3s],
+      form_1p: verb[form_1p],
+      form_2p: verb[form_2p],
+      form_3p: verb[form_3p],
+    }
   };
 }
 

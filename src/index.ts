@@ -7,7 +7,7 @@ import {
 } from './generators/problemgenerators.js';
 import { getStats, recordPlayed } from './stats.js';
 import Cookies from 'js-cookie';
-import { loadVerbs } from './verbs.js';
+import { getEndings, loadVerbs } from './verbs.js';
 
 declare global {
   interface Window {
@@ -25,26 +25,23 @@ async function renderRandom() {
   initRandom();
 
   if (generators().length == 0) {
-    document.getElementById('verb')!.innerHTML = 'No categories selected';
+    document.querySelector('[data-generated="verb"]')!.innerHTML = 'No categories selected';
     return;
   }
 
-  let { tense, form, verb, conjugation, english, table } =
-    generators()[randInt(generators().length)]();
+  let generated = generators()[randInt(generators().length)]();
 
-  document.getElementById('verb')!.innerHTML = verb;
-  document.getElementById('tense')!.innerHTML = tense;
-  document.getElementById('form')!.innerHTML = form;
-  document.getElementById('conjugation')!.innerHTML = conjugation;
-  document.getElementById('english')!.innerHTML = english;
+  document.querySelectorAll('[data-generated]').forEach((el) => {
+    el.innerHTML = (generated as any)[el.getAttribute('data-generated')!];
+  });
 
-  document.getElementById('table_verb')!.innerHTML = verb;
-  document.getElementById('table_1s')!.innerHTML = table[0];
-  document.getElementById('table_2s')!.innerHTML = table[1];
-  document.getElementById('table_3s')!.innerHTML = table[2];
-  document.getElementById('table_1p')!.innerHTML = table[3];
-  document.getElementById('table_2p')!.innerHTML = table[4];
-  document.getElementById('table_3p')!.innerHTML = table[5];
+  document.querySelectorAll('[data-form]').forEach((el) => {
+    el.innerHTML = generated.allForms[el.getAttribute('data-form')!];
+  });
+
+  document.querySelectorAll('[data-form-ending]').forEach((el) => {
+    el.innerHTML = getEndings(generated.tense, generated.verb)[el.getAttribute('data-form-ending')!];
+  });
 
   document.getElementById('problemId')!.innerHTML =
     `Problem ID: ${getProblemId()}`;
@@ -63,24 +60,21 @@ async function renderRandom() {
 }
 
 window.newProblem = (wasCorrect: boolean) => {
-  document.getElementById('verb')!.innerHTML = '';
-  document.getElementById('tense')!.innerHTML = '';
-  document.getElementById('form')!.innerHTML = '';
-  document.getElementById('conjugation')!.innerHTML = '';
-  document.getElementById('conjugation')!.classList.add('hidden');
+  document.querySelectorAll('[data-is-solution]').forEach((el) => {
+    el.classList.add('hidden');
+  });
+
   document.getElementById('next')!.classList.remove('hidden');
-  document.getElementById('feedback')!.classList.add('hidden');
-  document.getElementById('forms_table')!.classList.add('hidden');
   recordPlayed(wasCorrect);
   refreshStats();
   renderRandom();
 };
 
 window.showAllSteps = () => {
-  document.getElementById('conjugation')!.classList.remove('hidden');
   document.getElementById('next')!.classList.add('hidden');
-  document.getElementById('feedback')!.classList.remove('hidden');
-  document.getElementById('forms_table')!.classList.remove('hidden');
+  document.querySelectorAll('[data-is-solution]').forEach((el) => {
+    el.classList.remove('hidden');
+  });
 };
 
 window.initTrainer = async () => {

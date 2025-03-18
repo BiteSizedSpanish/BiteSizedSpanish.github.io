@@ -73,16 +73,45 @@
       </dialog>
       <div id="stats" class="text-start"></div>
 
-      <div id="tense" class="text-xl md:text-3xl"></div>
+      <div class="flex justify-center gap-4 md:gap-8">
+        <div data-generated="tense" class="text-xl md:text-3xl"></div>
+      <div
+        class="aspect-square cursor-pointer content-center rounded-md border text-xs md:text-lg font-mono font-bold"
+        onclick="document.getElementById('explanation').showModal()">></div>
+      <dialog
+        id="explanation"
+        onclick="document.getElementById('explanation').close()"
+        class="pointer rounded-lg border bg-black p-4 text-white backdrop:bg-black/60">
+        <div
+          class="mx-auto my-8 grid w-fit grid-cols-2 rounded-lg border border-white">
+          <div class="border-r border-b border-white p-4 font-bold text-lg" data-generated="tense"></div>
+          <div class="border-l border-b border-white p-4 font-bold text-lg" data-form-ending="type"></div>
+          <div class="border border-gray-500 p-4">yo</div>
+          <div class="border border-gray-500 p-4" data-form-ending="form_1s"></div>
+          <div class="border border-gray-500 p-4">tú</div>
+          <div class="border border-gray-500 p-4" data-form-ending="form_2s"></div>
+          <div class="border border-gray-500 p-4">él, ella, usted</div>
+          <div class="border border-gray-500 p-4" data-form-ending="form_3s"></div>
+          <div class="border border-gray-500 p-4">nosotros/as</div>
+          <div class="border border-gray-500 p-4" data-form-ending="form_1p"></div>
+          <div class="border border-gray-500 p-4">vosotros/as</div>
+          <div class="border border-gray-500 p-4" data-form-ending="form_2p"></div>
+          <div class="border-r border-t border-gray-500 p-4">ellos/as, ustedes</div>
+          <div class="border-l border-t border-gray-500 p-4" data-form-ending="form_3p"></div>
+        </div>
+    </dialog>
+      </div>
+
       <div class="flex justify-center gap-4 md:gap-8">
         <div
-          id="form"
+          data-generated="form"
           class="font-serif text-2xl text-gray-400 md:text-5xl"></div>
-        <div id="verb" class="font-serif text-2xl md:text-5xl"></div>
+        <div data-generated="verb" class="font-serif text-2xl md:text-5xl"></div>
       </div>
-      <div id="english" class="text-l text-gray-400 md:text-xl"></div>
+      <div data-generated="english" class="text-l text-gray-400 md:text-xl"></div>
       <div
-        id="conjugation"
+        data-generated="conjugation"
+        data-is-solution
         class="hidden font-serif text-2xl text-green-300 md:text-5xl"></div>
       <div id="actions">
         <div id="next" class="flex w-full justify-center gap-4">
@@ -92,7 +121,7 @@
             <span class="content-center p-2"> reveal solution </span>
           </button>
         </div>
-        <div id="feedback" class="flex hidden w-full justify-center gap-4">
+        <div data-is-solution="" class="flex hidden w-full justify-center gap-4">
           <button
             onclick="newProblem(false)"
             class="flex w-full max-w-[500px] cursor-pointer justify-center rounded-lg border bg-red-900/90 p-2">
@@ -124,24 +153,23 @@
           </button>
         </div>
         <div
-          id="forms_table"
+          data-is-solution
           class="mx-auto my-8 grid hidden w-fit grid-cols-2 rounded-lg border border-white">
-          <div class="border border-gray-500 p-4"></div>
           <div
-            class="border border-gray-500 p-4 font-bold"
-            id="table_verb"></div>
+            class="border-b border-white p-4 font-bold col-span-2"
+            data-generated="verb"></div>
           <div class="border border-gray-500 p-4">yo</div>
-          <div class="border border-gray-500 p-4" id="table_1s"></div>
+          <div class="border border-gray-500 p-4" data-form="form_1s"></div>
           <div class="border border-gray-500 p-4">tú</div>
-          <div class="border border-gray-500 p-4" id="table_2s"></div>
-          <div class="border border-gray-500 p-4">él/ella/usted</div>
-          <div class="border border-gray-500 p-4" id="table_3s"></div>
-          <div class="border border-gray-500 p-4">nosotros</div>
-          <div class="border border-gray-500 p-4" id="table_1p"></div>
-          <div class="border border-gray-500 p-4">vosotros</div>
-          <div class="border border-gray-500 p-4" id="table_2p"></div>
-          <div class="border border-gray-500 p-4">ellos/ellas/ustedes</div>
-          <div class="border border-gray-500 p-4" id="table_3p"></div>
+          <div class="border border-gray-500 p-4" data-form="form_2s"></div>
+          <div class="border border-gray-500 p-4">él, ella, usted</div>
+          <div class="border border-gray-500 p-4" data-form="form_3s"></div>
+          <div class="border border-gray-500 p-4">nosotros/as</div>
+          <div class="border border-gray-500 p-4" data-form="form_1p"></div>
+          <div class="border border-gray-500 p-4">vosotros/as</div>
+          <div class="border border-gray-500 p-4" data-form="form_2p"></div>
+          <div class="border-r border-t border-gray-500 p-4">ellos/as, ustedes</div>
+          <div class="border-l border-t border-gray-500 p-4" data-form="form_3p"></div>
         </div>
       </div>
 

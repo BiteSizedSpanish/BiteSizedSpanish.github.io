@@ -20,7 +20,7 @@ export type GeneratorResult = {
   verb: string;
   conjugation: string;
   english: string;
-  table: string[];
+  allForms: any;
 };
 
 export const generatorConfig = {
