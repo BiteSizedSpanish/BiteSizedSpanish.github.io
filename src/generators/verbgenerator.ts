@@ -93,3 +93,7 @@ export function generateCondicionalPerfecto(): GeneratorResult {
 export function generateImperativoAfirmativo(): GeneratorResult {
   return generateVerb('Imperativo afirmativo', 'Imperativo Afirmativo');
 }
+
+export function generateImperativoNegativo(): GeneratorResult {
+  return generateVerb('Imperativo negativo', 'Imperativo Negativo');
+}

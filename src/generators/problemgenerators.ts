@@ -6,6 +6,7 @@ import {
   generateFuturo,
   generateFuturoPerfecto,
   generateImperativoAfirmativo,
+  generateImperativoNegativo,
   generateImperfecto,
   generatePluscuamperfecto,
   generatePresente,
@@ -40,6 +41,10 @@ export const generatorConfig = {
   k: {
     generators: [generateImperativoAfirmativo],
     name: 'Imperativo afirmativo',
+  },
+  l: {
+    generators: [generateImperativoNegativo],
+    name: 'Imperativo negativo',
   },
 };
 

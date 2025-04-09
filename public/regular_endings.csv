@@ -65,3 +65,9 @@ imperativo afirmativo,form_3s,-e,-a,-a
 imperativo afirmativo,form_1p,,,
 imperativo afirmativo,form_2p,-ad,-ed,-id
 imperativo afirmativo,form_3p,-en,-an,-an
+imperativo negativo,form_1s,,,
+imperativo negativo,form_2s,no -es,no -as,no -as
+imperativo negativo,form_3s,no -e,no -a,no -a
+imperativo negativo,form_1p,,,
+imperativo negativo,form_2p,no -éis,no -áis,no -áis
+imperativo negativo,form_3p,no -en,no -an,no -an
